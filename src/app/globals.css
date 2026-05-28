@@ -1,0 +1,197 @@
+@import "tailwindcss";
+
+:root {
+  /* Brand Colors */
+  --burnt-orange: #E85D04;
+  --deep-orange: #D45103;
+  --dark-ember: #9D3C02;
+  --forest-green: #2D6A4F;
+  --light-sage: #40916C;
+  --dark-forest: #1B4332;
+  --nigerian-gold: #FFB703;
+  --light-gold: #FFD166;
+  --pale-gold: #FFF3CD;
+  --charcoal-black: #1A1A1A;
+  --dark-gray: #333333;
+  --medium-gray: #666666;
+  --light-gray: #CCCCCC;
+  --pale-gray: #F5F5F5;
+  --error-red: #DC3545;
+  --warning-amber: #FD7E14;
+  --info-blue: #0D6EFD;
+  --success-green: #198754;
+  
+  /* Semantic */
+  --background: #FEFEFE;
+  --foreground: #1A1A1A;
+  --card-bg: #FFFFFF;
+  --surface-gray: #F8F9FA;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --font-sans: 'Inter', system-ui, sans-serif;
+  --font-heading: 'Poppins', system-ui, sans-serif;
+  
+  /* Custom colors for QuickBite */
+  --color-burnt-orange: #E85D04;
+  --color-deep-orange: #D45103;
+  --color-dark-ember: #9D3C02;
+  --color-forest-green: #2D6A4F;
+  --color-light-sage: #40916C;
+  --color-dark-forest: #1B4332;
+  --color-nigerian-gold: #FFB703;
+  --color-light-gold: #FFD166;
+  --color-pale-gold: #FFF3CD;
+  --color-charcoal: #1A1A1A;
+  --color-dark-gray: #333333;
+  --color-medium-gray: #666666;
+  --color-light-gray: #CCCCCC;
+  --color-pale-gray: #F5F5F5;
+  --color-error: #DC3545;
+  --color-warning: #FD7E14;
+  --color-info: #0D6EFD;
+  --color-success: #198754;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: 'Inter', system-ui, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: 'Poppins', system-ui, sans-serif;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+}
+
+/* Utility classes */
+.container {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 0 16px;
+}
+
+.btn-primary {
+  background: var(--burnt-orange);
+  color: white;
+  padding: 12px 24px;
+  border-radius: 12px;
+  font-weight: 600;
+  font-size: 16px;
+  transition: all 0.2s ease;
+  cursor: pointer;
+  border: none;
+}
+
+.btn-primary:hover {
+  background: var(--deep-orange);
+  transform: scale(0.98);
+}
+
+.btn-primary:disabled {
+  background: var(--light-gray);
+  color: #888888;
+  cursor: not-allowed;
+}
+
+.card {
+  background: var(--card-bg);
+  border-radius: 16px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.08);
+  overflow: hidden;
+}
+
+.text-orange {
+  color: var(--burnt-orange);
+}
+
+.text-green {
+  color: var(--forest-green);
+}
+
+.text-gold {
+  color: var(--nigerian-gold);
+}
+
+.bg-orange {
+  background: var(--burnt-orange);
+}
+
+.bg-green {
+  background: var(--forest-green);
+}
+
+.bg-gold {
+  background: var(--nigerian-gold);
+}
+
+/* Rating stars */
+.star-rating {
+  display: inline-flex;
+  gap: 2px;
+}
+
+.star {
+  color: var(--light-gray);
+}
+
+.star.filled {
+  color: var(--nigerian-gold);
+}
+
+/* Animations */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes slideUp {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.animate-fade-in {
+  animation: fadeIn 0.3s ease-out forwards;
+}
+
+.animate-slide-up {
+  animation: slideUp 0.4s ease-out forwards;
+}
+
+/* Hide scrollbar but keep functionality */
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+/* Mobile bottom nav safe area */
+.pb-safe {
+  padding-bottom: env(safe-area-inset-bottom, 16px);
+}
+
+/* Bottom sheet animation */
+@keyframes slideUpSheet {
+  from { transform: translateY(100%); }
+  to { transform: translateY(0); }
+}
+
+.bottom-sheet {
+  animation: slideUpSheet 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
