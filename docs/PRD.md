@@ -62,7 +62,7 @@ Nigerian food delivery is broken at every layer of the value chain:
 - Complicated menus with no filter for dietary preferences (no pork, no dairy, etc.).
 
 **Goals:**
-- Get food in ≤45 minutes, reliably.
+- Get food in ≤30 minutes, reliably.
 - Know exactly when food arrives so they can plan their time.
 - Find local Buka food — not just KFC and Domino's.
 
@@ -308,7 +308,7 @@ Nigerian food delivery is broken at every layer of the value chain:
 
 | Metric | Target |
 |--------|--------|
-| Average delivery time | ≤ 45 minutes |
+| Average delivery time | ≤ 30 minutes |
 | Order accuracy rate | ≥ 95% (correct items, correct quantity) |
 | Rider efficiency | ≥ 2.5 deliveries/rider/shift |
 | First-order fulfillment rate | ≥ 98% (no cancellations after payment) |
@@ -340,7 +340,7 @@ The following features are explicitly **out of scope** for MVP (Phase 1). They w
 - **Table reservation / dine-in:** Not a delivery product.
 - **Grocery or quick commerce:** Pure food delivery focus only.
 - **Corporate / B2B meal plans:** Enterprise accounts with invoicing. Future phase.
-- **Referral program:** Viral loops. MVP launch without referral engine.
+
 - **Native iOS app:** MVP is React Native / Flutter (cross-platform). Separate iOS build deferred.
 - **Admin analytics dashboard:** Basic stats only; full BI/deck deferred.
 - **Automated rider dispatch:** Manual assignment for MVP.
@@ -382,6 +382,10 @@ The following features are explicitly **out of scope** for MVP (Phase 1). They w
 | S6 | Customer support chat | In-app, not phone |
 | S7 | Group order (one person pays for others) | WhatsApp share link |
 | S8 | Filter by dietary preference | Halal, No Pork, Vegetarian |
+| S9 | Referral program | WhatsApp-viral acquisition channel critical for Nigerian market. Low cost, high trust network effect. |
+| S10 | AI: Recommended for you | Personalized food recommendations based on order history and preferences |
+| S11 | AI: Smart search autocomplete | Predicts what user is looking for as they type, reducing search friction |
+| S12 | AI: Dynamic pricing indicators | Show "popular" badges on high-demand items to drive conversion |
 
 ### Could Have (Differentiated but not critical)
 
@@ -407,13 +411,14 @@ The following features are explicitly **out of scope** for MVP (Phase 1). They w
 
 ## 9. Tech Stack Recommendation
 
-### Consumer App: React Native (Expo)
+### Consumer App: Next.js 14 (App Router)
 
-**Why:** Single codebase for iOS + Android. Faster iteration than native. Large talent pool in Nigeria/Lagos. Expo managed workflow reduces DevOps overhead.
+**Why:** Web-based PWA approach enables faster iteration and deployment. Single codebase serves both mobile web and desktop. Next.js 14 App Router provides excellent performance, built-in image optimization, and superior SEO for restaurant discovery pages. Web app-first (proven with Netlify deployment) lowers customer acquisition friction.
 
 **Alternatives considered:**
-- Flutter: Strong, but React Native ecosystem in Nigeria is more established for web-to-mobile bridges. Flutter also requires dedicated mobile devs.
-- PWA: Too slow for a food delivery app UX; poor push notification support on iOS.
+- React Native (Expo): Cross-platform but requires separate build pipeline. Web-to-mobile bridge adds complexity.
+- Flutter: Strong performance but requires dedicated mobile devs and separate web support.
+- PWA (vanilla): Too much boilerplate; Next.js provides better developer experience and performance out of the box.
 
 ### Admin / Restaurant Portal: Next.js (React)
 
@@ -433,11 +438,11 @@ The following features are explicitly **out of scope** for MVP (Phase 1). They w
 
 | Component | Choice | Rationale |
 |-----------|--------|-----------|
-| Maps | Google Maps SDK (React Native) | Best Nigeria coverage for addresses. Mapbox as fallback. |
-| Push Notifications | Firebase Cloud Messaging (FCM) | Works with React Native; supports iOS + Android. |
+| Maps | Leaflet (OSM) or Google Maps JavaScript API | Best Nigeria coverage. Leaflet with OSM provides no-API-key required mapping; Google Maps as fallback for geocoding. Mapbox also available. |
+| Push Notifications | Firebase Cloud Messaging (FCM) | Works with Next.js PWA; supports iOS and Android via service workers. |
 | Payment | Flutterwave | Best Nigeria coverage: card, USSD, transfer, Opay/Moniepoint wallets. Direct API integration. |
 | Image CDN | Supabase Storage + Cloudflare | Supabase for upload; Cloudflare CDN for delivery. |
-| Deployment | Vercel (Next.js), Expo (React Native) | Managed; minimal DevOps. |
+| Deployment | Vercel (Next.js) | Managed; minimal DevOps. Excellent Edge Network for Lagos users. |
 | Error monitoring | Sentry | Real-time error tracking across app and portal. |
 | Analytics | Mixpanel or PostHog | Event-based funnel analysis. PostHog is open-source and self-hostable. |
 | SMS / OTP | Termii or Africa's Talking | OTP for phone auth. Termii is cheaper for Nigeria. |
@@ -595,6 +600,22 @@ Once QuickBite reaches **200+ orders per day**, invest in a custom rider dispatc
 | **Glovo** | International brand, multi-category | High fees, confusing UX, poor local food selection | Simpler app, local focus, better commissions for restaurants |
 | **HeyFood** | Growing, good restaurant selection | Inconsistent delivery times, limited coverage | Faster onboarding for restaurant partners, real-time tracking guarantee |
 | **Jumia Food** | Exiting market — opportunity to capture abandoned users | Retiring brand, negative sentiment | New brand = fresh slate, modern tech stack |
+
+### Jumia Food Exodus Strategy
+
+With Jumia Food exiting at end-2025, QuickBite has a unique window to capture:
+
+**Displaced Restaurant Partners:**
+- Actively outreach to Jumia Food restaurant partners in Lagos (Ikeja, VI, Lekki) who need a new platform
+- Offer priority onboarding and reduced commission (8% for first 3 months) to ease transition
+- Target: Capture 20+ Jumia Food restaurants in Month 1–2
+
+**Displaced Customers:**
+- Jumia Food's habit-based orderers are without a home — launch targeted WhatsApp and Instagram campaigns
+- Position QuickBite as the modern, reliable alternative with ≤30 min delivery guarantee
+- Offer first-order discount (N500 off) to Jumia Food refugees
+
+**Key Action:** Assign a dedicated BD resource to contact Jumia Food partners directly in Week 1 post-MVP launch.
 | **FoodCo** | Strong in Abuja | Limited online presence, outdated app | Next-gen app experience, better mobile UX |
 
 ---

@@ -7,7 +7,7 @@
 
 ## 1. Executive Summary
 
-QuickBite enters a growing but competitive Nigerian food delivery market (valued at $8.53B+ in 2025, projected to exceed $16B by 2030). The primary competitors are **Jumia Food**, **Glovo**, and **Bolt Food**. This strategy prioritizes high-impact, low-cost organic channels first, then scales paid channels once traction is established.
+QuickBite enters a growing but competitive Nigerian food delivery market (valued at $8.53B+ in 2025, projected to exceed $16B by 2030). The primary competitors are **Jumia Food (exiting end-2025)**, **Glovo**, and **Chowdeck** (primary threat: 30-min delivery benchmark, Mira POS acquisition). This strategy prioritizes high-impact, low-cost organic channels first, then scales paid channels once traction is established.
 
 ---
 
@@ -397,7 +397,7 @@ WhatsApp is arguably the most important platform in Nigeria for commerce.
 |---|---|---|
 | **Jumia Food** | Brand recognition, large user base, established logistics, strong SEO DA | Broad e-commerce focus dilutes food message; perceived as expensive |
 | **Glovo** | International brand, multi-category, strong app UX | Less local Nigerian food focus; expensive for users |
-| **Bolt Food** | Ride-hailing brand trust, existing user base, aggressive pricing | Narrower restaurant selection, less local food depth |
+| **Chowdeck** | Ride-hailing brand trust, existing user base, aggressive pricing (30-min delivery, Mira POS acquisition creating restaurant tech threat) | Narrower restaurant selection, less local food depth |
 | **ChowCentral** | Strong restaurant brand partnerships, premium positioning | Delivery-focused but limited app SEO |
 | **Eatsy** | Growing local player, food-focused | Smaller scale, less domain authority |
 
@@ -405,9 +405,9 @@ WhatsApp is arguably the most important platform in Nigeria for commerce.
 
 | Competitor | Est. Domain Authority | Primary Keywords Ranking For | QuickBite Differentiation |
 |---|---|---|---|
-| Jumia Food | 75+ | "food delivery Nigeria", "order food online Lagos" | More focused, food-only, faster, cheaper perception |
+| Jumia Food (exiting) | 75+ | "food delivery Nigeria", "order food online Lagos" | More focused, food-only, faster, cheaper perception |
 | Glovo | 60+ | "food delivery Lagos", "grocery delivery Nigeria" | Hyper-focus on Lagos, better local food selection |
-| Bolt Food | 55+ | "food delivery Lagos", "order food online Nigeria" | Local Nigerian food expertise, rider community |
+| Chowdeck | 50+ | "food delivery Lagos", "order food online Nigeria", "30 min delivery" | Local Nigerian food expertise, lower commissions, rider community |
 
 ### 8.3 Competitive Keyword Gaps (Opportunities for QuickBite)
 
@@ -425,7 +425,7 @@ These keywords have meaningful search volume but are not dominated by competitor
 |---|---|---|
 | Jumia Food | Yes (Jumia blog) | General e-commerce, not food-focused |
 | Glovo | Minimal | City guides, not deep food content |
-| Bolt Food | Very minimal | Not a content marketing priority |
+| Chowdeck | Minimal | Not a content marketing priority; aggressive expansion focus |
 
 **Opportunity:** QuickBite can dominate food-specific content SEO while competitors are distracted by broader e-commerce content strategies.
 
