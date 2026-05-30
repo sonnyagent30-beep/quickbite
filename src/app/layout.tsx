@@ -1,6 +1,6 @@
 import { Suspense } from 'react'
 import type { Metadata, Viewport } from 'next'
-import { Poppins, Inter } from 'next/font/google'
+import { Poppins, Inter, JetBrains_Mono } from 'next/font/google'
 import './globals.css'
 import { CartProvider } from '@/lib/cart-context'
 import AppShell from '@/components/AppShell'
@@ -17,6 +17,13 @@ const inter = Inter({
   subsets: ['latin'],
   weight: ['400', '500', '600'],
   variable: '--font-inter',
+  display: 'swap',
+})
+
+const jetbrainsMono = JetBrains_Mono({
+  subsets: ['latin'],
+  weight: ['400', '500'],
+  variable: '--font-mono',
   display: 'swap',
 })
 
@@ -47,8 +54,8 @@ export default function RootLayout({
   children: React.ReactNode
 }) {
   return (
-    <html lang="en" className={`${poppins.variable} ${inter.variable}`}>
-      <body className="min-h-screen bg-[#FEFEFE] antialiased">
+    <html lang="en" className={`${poppins.variable} ${inter.variable} ${jetbrainsMono.variable}`}>
+      <body className="min-h-screen bg-[#FEFEFE] antialiased font-sans">
         <Suspense fallback={<div className="min-h-screen bg-[#FEFEFE]" />}>
           <CartProvider>
             <AppShell>

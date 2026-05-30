@@ -58,20 +58,49 @@ export default function SettingsPage() {
 
   useEffect(() => {
     // Load user from localStorage
-    const savedUser = localStorage.getItem('user')
-    if (savedUser) {
-      setUser(JSON.parse(savedUser))
-    } else {
-      // Default user for demo
+    try {
+      const savedUser = localStorage.getItem('user')
+      if (savedUser) {
+        setUser(JSON.parse(savedUser))
+      } else {
+        // Default user for demo
+        setUser({ name: 'Tobi Okafor', email: 'tobi.okafor@email.com', phone: '+234 803 456 7890' })
+      }
+    } catch (e) {
+      // Default user for demo if localStorage fails
       setUser({ name: 'Tobi Okafor', email: 'tobi.okafor@email.com', phone: '+234 803 456 7890' })
     }
 
     // Load addresses from localStorage
-    const savedAddresses = localStorage.getItem('addresses')
-    if (savedAddresses) {
-      setAddresses(JSON.parse(savedAddresses))
-    } else {
-      // Default addresses for demo
+    try {
+      const savedAddresses = localStorage.getItem('addresses')
+      if (savedAddresses) {
+        setAddresses(JSON.parse(savedAddresses))
+      } else {
+        // Default addresses for demo
+        setAddresses([
+          {
+            id: '1',
+            label: 'Home',
+            street: 'Donum House, Plot 45 Primeva Life Boulevard',
+            city: 'Lagos',
+            area: 'Ikoyi',
+            instructions: 'Gate code: 4521',
+            is_default: true
+          },
+          {
+            id: '2',
+            label: 'Work',
+            street: '3rd Floor, Legal Aids Council Building',
+            city: 'Lagos',
+            area: 'Victoria Island',
+            instructions: 'Ask for QuickBite reception',
+            is_default: false
+          }
+        ])
+      }
+    } catch (e) {
+      // Default addresses for demo if localStorage fails
       setAddresses([
         {
           id: '1',
@@ -97,12 +126,20 @@ export default function SettingsPage() {
 
   const saveUser = (updatedUser: UserProfile) => {
     setUser(updatedUser)
-    localStorage.setItem('user', JSON.stringify(updatedUser))
+    try {
+      localStorage.setItem('user', JSON.stringify(updatedUser))
+    } catch (err) {
+      console.warn('Failed to save user to localStorage:', err)
+    }
   }
 
   const saveAddresses = (updatedAddresses: Address[]) => {
     setAddresses(updatedAddresses)
-    localStorage.setItem('addresses', JSON.stringify(updatedAddresses))
+    try {
+      localStorage.setItem('addresses', JSON.stringify(updatedAddresses))
+    } catch (err) {
+      console.warn('Failed to save addresses to localStorage:', err)
+    }
   }
 
   const handleProfileUpdate = (e: React.FormEvent) => {
@@ -172,7 +209,11 @@ export default function SettingsPage() {
   }
 
   const handleDeleteAccount = () => {
-    localStorage.clear()
+    try {
+      localStorage.clear()
+    } catch (err) {
+      console.warn('Failed to clear localStorage:', err)
+    }
     alert('Account deleted. Redirecting...')
     window.location.href = '/'
   }
@@ -323,7 +364,11 @@ export default function SettingsPage() {
                   onChange={(e) => {
                     const updated = { ...notifications, orderUpdates: e.target.checked }
                     setNotifications(updated)
-                    localStorage.setItem('notification_prefs', JSON.stringify(updated))
+                    try {
+                      localStorage.setItem('notification_prefs', JSON.stringify(updated))
+                    } catch (err) {
+                      console.warn('Failed to save notification prefs:', err)
+                    }
                   }}
                   className="w-5 h-5 accent-[#E85D04]"
                 />
@@ -339,7 +384,11 @@ export default function SettingsPage() {
                   onChange={(e) => {
                     const updated = { ...notifications, promotions: e.target.checked }
                     setNotifications(updated)
-                    localStorage.setItem('notification_prefs', JSON.stringify(updated))
+                    try {
+                      localStorage.setItem('notification_prefs', JSON.stringify(updated))
+                    } catch (err) {
+                      console.warn('Failed to save notification prefs:', err)
+                    }
                   }}
                   className="w-5 h-5 accent-[#E85D04]"
                 />
@@ -355,7 +404,11 @@ export default function SettingsPage() {
                   onChange={(e) => {
                     const updated = { ...notifications, newsletter: e.target.checked }
                     setNotifications(updated)
-                    localStorage.setItem('notification_prefs', JSON.stringify(updated))
+                    try {
+                      localStorage.setItem('notification_prefs', JSON.stringify(updated))
+                    } catch (err) {
+                      console.warn('Failed to save notification prefs:', err)
+                    }
                   }}
                   className="w-5 h-5 accent-[#E85D04]"
                 />

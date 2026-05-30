@@ -93,9 +93,13 @@ export default function HelpPage() {
   const handleContactSubmit = (e: React.FormEvent) => {
     e.preventDefault()
     // Mock submission - store in localStorage
-    const submissions = JSON.parse(localStorage.getItem('support_submissions') || '[]')
-    submissions.push({ ...contactForm, timestamp: new Date().toISOString() })
-    localStorage.setItem('support_submissions', JSON.stringify(submissions))
+    try {
+      const submissions = JSON.parse(localStorage.getItem('support_submissions') || '[]')
+      submissions.push({ ...contactForm, timestamp: new Date().toISOString() })
+      localStorage.setItem('support_submissions', JSON.stringify(submissions))
+    } catch (err) {
+      console.warn('Failed to save contact form submission:', err)
+    }
     setFormSubmitted(true)
     setContactForm({ name: '', email: '', subject: '', message: '' })
   }

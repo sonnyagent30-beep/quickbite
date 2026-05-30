@@ -15,15 +15,19 @@ export default function LoginPage() {
 
   useEffect(() => {
     // Check if already logged in
-    const user = localStorage.getItem('quickbite_user')
-    const onboardingComplete = localStorage.getItem('onboarding_complete')
-    if (user) {
-      // If onboarding is complete, go to /home, otherwise /onboarding
-      if (onboardingComplete === 'true') {
-        router.replace('/home')
-      } else {
-        router.replace('/onboarding')
+    try {
+      const user = localStorage.getItem('quickbite_user')
+      const onboardingComplete = localStorage.getItem('onboarding_complete')
+      if (user) {
+        // If onboarding is complete, go to /home, otherwise /onboarding
+        if (onboardingComplete === 'true') {
+          router.replace('/home')
+        } else {
+          router.replace('/onboarding')
+        }
       }
+    } catch (e) {
+      // localStorage not available or corrupted data
     }
   }, [router])
 
@@ -56,21 +60,32 @@ export default function LoginPage() {
     }
 
     // Check if this is a returning user (was previously registered)
-    const existingOnboardingComplete = localStorage.getItem('onboarding_complete')
+    let existingOnboardingComplete = 'false'
+    try {
+      existingOnboardingComplete = localStorage.getItem('onboarding_complete') || 'false'
+    } catch (e) {
+      // localStorage not available
+    }
     
     // Set auth state
-    localStorage.setItem('quickbite_user', JSON.stringify(user))
-    localStorage.setItem('is_logged_in', 'true')
-    
+    try {
+      localStorage.setItem('quickbite_user', JSON.stringify(user))
+      localStorage.setItem('is_logged_in', 'true')
+    } catch (e) {
+      // localStorage not available
     // If onboarding was already completed before, keep it that way
     // Otherwise, set to 'true' for returning users (they've seen it before)
-    if (existingOnboardingComplete === 'true') {
-      // Returning user - keep onboarding_complete as true
-    } else {
-      // New login that wasn't from register flow - set true for returning users
-      // For completely new users coming from register, register sets it to false
-      // This handles users who registered before this update
-      localStorage.setItem('onboarding_complete', 'true')
+    // For completely new users coming from register, register sets it to false
+    // This handles users who registered before this update
+    try {
+      if (existingOnboardingComplete === 'true') {
+        // Returning user - keep onboarding_complete as true
+      } else {
+        // New login that wasn't from register flow - set true for returning users
+        localStorage.setItem('onboarding_complete', 'true')
+      }
+    } catch (e) {
+      // localStorage not available
     }
 
     setLoading(false)

@@ -6,10 +6,14 @@ import Link from 'next/link'
 export default function LandingPage() {
   useEffect(() => {
     // If already logged in with onboarding complete, redirect to /home
-    const user = localStorage.getItem('quickbite_user')
-    const onboardingComplete = localStorage.getItem('onboarding_complete')
-    if (user && onboardingComplete === 'true') {
-      window.location.href = '/home'
+    try {
+      const user = localStorage.getItem('quickbite_user')
+      const onboardingComplete = localStorage.getItem('onboarding_complete')
+      if (user && onboardingComplete === 'true') {
+        window.location.href = '/home'
+      }
+    } catch (e) {
+      // localStorage not available or corrupted data
     }
   }, [])
 

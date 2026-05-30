@@ -39,19 +39,27 @@ export default function ProfilePage() {
 
   // Check login status from localStorage on mount
   useEffect(() => {
-    const savedUser = localStorage.getItem('quickbite_user')
-    if (savedUser) {
-      const user = JSON.parse(savedUser)
-      setIsLoggedIn(true)
-      setUserName(user.name || '')
-      setUserPhone(user.phone || '')
+    try {
+      const savedUser = localStorage.getItem('quickbite_user')
+      if (savedUser) {
+        const user = JSON.parse(savedUser)
+        setIsLoggedIn(true)
+        setUserName(user.name || '')
+        setUserPhone(user.phone || '')
+      }
+    } catch (e) {
+      // localStorage not available or corrupted data
     }
   }, [])
 
   const handleLogout = () => {
     if (confirm('Are you sure you want to logout?')) {
-      localStorage.removeItem('quickbite_user')
-      localStorage.removeItem('onboarding_complete')
+      try {
+        localStorage.removeItem('quickbite_user')
+        localStorage.removeItem('onboarding_complete')
+      } catch (err) {
+        console.warn('Failed to clear localStorage:', err)
+      }
       router.push('/login')
     }
   }

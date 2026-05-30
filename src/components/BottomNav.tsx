@@ -91,7 +91,10 @@ export default function BottomNav() {
             }`}
           >
             {item.icon}
-            <span className="text-[10px] font-medium">{item.label}</span>
+            <span className="text-[12px] font-medium">{item.label}</span>
+            {isActive(item.path) && (
+              <span className="absolute -bottom-1 w-1 h-1 bg-[#E85D04] rounded-full" />
+            )}
             {item.badge !== undefined && item.badge > 0 && (
               <span className="absolute -top-0.5 -right-0.5 w-5 h-5 bg-[#E85D04] text-white text-xs font-bold rounded-full flex items-center justify-center">
                 {item.badge}

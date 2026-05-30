@@ -43,15 +43,27 @@ export default function HomePage() {
 
   useEffect(() => {
     // Check if logged in - redirect to / if not
-    const user = localStorage.getItem('quickbite_user')
-    if (!user) {
+    try {
+      const user = localStorage.getItem('quickbite_user')
+      if (!user) {
+        window.location.href = '/'
+        return
+      }
+    } catch (err) {
+      console.warn('Failed to check user authentication:', err)
       window.location.href = '/'
       return
     }
     
     // Check onboarding status - if not completed, redirect to onboarding
-    const onboardingComplete = localStorage.getItem('onboarding_complete')
-    if (onboardingComplete !== 'true') {
+    try {
+      const onboardingComplete = localStorage.getItem('onboarding_complete')
+      if (onboardingComplete !== 'true') {
+        window.location.href = '/onboarding'
+        return
+      }
+    } catch (err) {
+      console.warn('Failed to check onboarding status:', err)
       window.location.href = '/onboarding'
       return
     }

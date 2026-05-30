@@ -26,6 +26,25 @@
   --foreground: #1A1A1A;
   --card-bg: #FFFFFF;
   --surface-gray: #F8F9FA;
+  
+  /* 4px base spacing system */
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 20px;
+  --space-6: 24px;
+  --space-8: 32px;
+  --space-10: 40px;
+  --space-12: 48px;
+  --space-16: 64px;
+  
+  /* Border radius tokens */
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 16px;
+  --radius-xl: 24px;
+  --radius-full: 9999px;
 }
 
 @theme inline {
@@ -184,6 +203,11 @@ h1, h2, h3, h4, h5, h6 {
 /* Mobile bottom nav safe area */
 .pb-safe {
   padding-bottom: env(safe-area-inset-bottom, 16px);
+}
+
+/* Mono font for order IDs and prices */
+.font-mono {
+  font-family: 'JetBrains Mono', ui-monospace, SFMono-Regular, 'SF Mono', Menlo, Consolas, monospace;
 }
 
 /* Bottom sheet animation */

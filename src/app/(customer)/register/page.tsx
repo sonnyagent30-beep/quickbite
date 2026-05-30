@@ -18,9 +18,13 @@ export default function RegisterPage() {
 
   useEffect(() => {
     // Check if already logged in
-    const user = localStorage.getItem('quickbite_user')
-    if (user) {
-      router.replace('/')
+    try {
+      const user = localStorage.getItem('quickbite_user')
+      if (user) {
+        router.replace('/')
+      }
+    } catch (e) {
+      // localStorage not available or corrupted data
     }
   }, [router])
 
@@ -64,10 +68,14 @@ export default function RegisterPage() {
     }
 
     // Save to localStorage (mock auth)
-    localStorage.setItem('quickbite_user', JSON.stringify(newUser))
-    localStorage.setItem('is_logged_in', 'true')
-    // Set onboarding_complete to false so they must complete onboarding
-    localStorage.setItem('onboarding_complete', 'false')
+    try {
+      localStorage.setItem('quickbite_user', JSON.stringify(newUser))
+      localStorage.setItem('is_logged_in', 'true')
+      // Set onboarding_complete to false so they must complete onboarding
+      localStorage.setItem('onboarding_complete', 'false')
+    } catch (e) {
+      // localStorage not available
+    }
 
     setLoading(false)
     router.replace('/onboarding')

@@ -34,26 +34,39 @@ export default function OnboardingPage() {
 
   useEffect(() => {
     // Check if logged in first - if not, redirect to login
-    const user = localStorage.getItem('quickbite_user')
-    if (!user) {
+    try {
+      const user = localStorage.getItem('quickbite_user')
+      if (!user) {
+        router.replace('/login')
+        return
+      }
+      
+      // Check if already completed onboarding
+      const onboardingComplete = localStorage.getItem('onboarding_complete')
+      if (onboardingComplete === 'true') {
+        router.replace('/home')
+      }
+    } catch (e) {
+      // localStorage not available or corrupted data
       router.replace('/login')
-      return
-    }
-    
-    // Check if already completed onboarding
-    const onboardingComplete = localStorage.getItem('onboarding_complete')
-    if (onboardingComplete === 'true') {
-      router.replace('/home')
     }
   }, [router])
 
   const handleComplete = () => {
-    localStorage.setItem('onboarding_complete', 'true')
+    try {
+      localStorage.setItem('onboarding_complete', 'true')
+    } catch (e) {
+      // localStorage not available
+    }
     router.replace('/home')
   }
 
   const handleSkip = () => {
-    localStorage.setItem('onboarding_complete', 'true')
+    try {
+      localStorage.setItem('onboarding_complete', 'true')
+    } catch (e) {
+      // localStorage not available
+    }
     router.replace('/home')
   }
 
