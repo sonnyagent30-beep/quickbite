@@ -156,7 +156,7 @@ export default function RestaurantDetailPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-[#FEFEFE]">
+      <div className="min-h-screen bg-[#F8F9FA]">
         <div className="h-64 bg-[#E5E5E5] animate-pulse" />
         <div className="p-4">
           <div className="h-8 bg-[#E5E5E5] rounded w-1/2 mb-4" />
@@ -173,10 +173,10 @@ export default function RestaurantDetailPage() {
 
   if (!restaurant) {
     return (
-      <div className="min-h-screen bg-[#FEFEFE] flex items-center justify-center">
+      <div className="min-h-screen bg-[#F8F9FA] flex items-center justify-center">
         <div className="text-center">
           <p className="text-[#666666]">Restaurant not found</p>
-          <Link href="/" className="text-[#E85D04] font-medium mt-2 inline-block">
+          <Link href="/" className="text-[#FF7A00] font-medium mt-2 inline-block">
             Go back home
           </Link>
         </div>
@@ -185,7 +185,7 @@ export default function RestaurantDetailPage() {
   }
 
   return (
-    <div className="min-h-screen bg-[#FEFEFE] pb-20">
+    <div className="min-h-screen bg-[#F8F9FA] pb-20">
       {/* Parallax Hero Header */}
       <div className="relative h-48 overflow-hidden">
         <img
@@ -215,7 +215,7 @@ export default function RestaurantDetailPage() {
           </h1>
           <div className="flex flex-wrap items-center gap-3 text-sm">
             <div className="flex items-center gap-1 bg-white/20 px-2 py-1 rounded-full">
-              <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="#FFB703" stroke="none">
+              <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="#FFC107" stroke="none">
                 <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
               </svg>
               <span className="font-medium">{restaurant.rating}</span>
@@ -239,7 +239,7 @@ export default function RestaurantDetailPage() {
               onClick={() => scrollToCategory(category.id)}
               className={`px-4 py-2 rounded-full text-sm font-medium whitespace-nowrap transition-all ${
                 activeCategory === category.id
-                  ? 'bg-[#E85D04] text-white'
+                  ? 'bg-[#FF7A00] text-white'
                   : 'bg-[#F5F5F5] text-[#333333] hover:bg-[#E5E5E5]'
               }`}
             >
@@ -257,7 +257,7 @@ export default function RestaurantDetailPage() {
             ref={(el) => { categoryRefs.current[category.id] = el }}
             className="scroll-mt-28"
           >
-            <h2 className="text-lg font-bold text-[#1A1A1A] mb-3" style={{ fontFamily: 'var(--font-poppins)' }}>
+            <h2 className="text-lg font-bold text-[#1F1F1F] mb-3" style={{ fontFamily: 'var(--font-poppins)' }}>
               {category.name}
             </h2>
             <div className="space-y-3">
@@ -278,7 +278,7 @@ export default function RestaurantDetailPage() {
       {totalItems > 0 && (
         <Link
           href="/cart"
-          className="fixed bottom-20 left-4 right-4 bg-[#E85D04] text-white p-4 rounded-xl shadow-lg flex items-center justify-between z-50 md:hidden"
+          className="fixed bottom-20 left-4 right-4 bg-[#FF7A00] text-white p-4 rounded-xl shadow-lg flex items-center justify-between z-50 md:hidden"
         >
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 bg-white/20 rounded-full flex items-center justify-center">
@@ -299,12 +299,12 @@ export default function RestaurantDetailPage() {
           <div className="bg-white rounded-2xl w-full max-w-sm p-6 shadow-2xl">
             <div className="text-center mb-4">
               <div className="w-16 h-16 bg-[#FFF3CD] rounded-full flex items-center justify-center mx-auto mb-3">
-                <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#E85D04" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#FF7A00" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                   <path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/>
                   <path d="M12 9v4"/><path d="M12 17h.01"/>
                 </svg>
               </div>
-              <h3 className="text-lg font-bold text-[#1A1A1A] mb-2">Different Restaurant</h3>
+              <h3 className="text-lg font-bold text-[#1F1F1F] mb-2">Different Restaurant</h3>
               <p className="text-sm text-[#666666]">
                 Your cart has items from another restaurant. Do you want to clear it and add items from this restaurant instead?
               </p>
@@ -318,7 +318,7 @@ export default function RestaurantDetailPage() {
               </button>
               <button
                 onClick={confirmSwitchRestaurant}
-                className="flex-1 py-3 px-4 rounded-xl bg-[#E85D04] text-white font-medium hover:bg-[#D35400] transition-colors"
+                className="flex-1 py-3 px-4 rounded-xl bg-[#FF7A00] text-white font-medium hover:bg-[#D35400] transition-colors"
               >
                 Clear & Switch
               </button>
