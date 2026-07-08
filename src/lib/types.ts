@@ -16,18 +16,20 @@ export interface MenuItem {
 
 export interface Restaurant {
   id: string;
-  owner_id: string;
+  owner_id?: string;
   name: string;
-  description: string;
-  cuisine_type: string;
-  address: string;
-  location_lat: number;
-  location_lng: number;
+  description?: string;
+  cuisine_type?: string;
+  address?: string;
+  location_lat?: number;
+  location_lng?: number;
   rating: number;
-  is_open: boolean;
-  min_order: number;
-  delivery_fee: number;
+  rating_count?: number;
+  is_open?: boolean;
+  min_order?: number;
+  delivery_fee?: number;
   image_url?: string;
+  distance?: number;
   created_at?: string;
 }
 

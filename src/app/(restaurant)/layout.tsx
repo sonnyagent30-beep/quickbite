@@ -2,6 +2,7 @@
 
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
+import DemoBanner from '@/components/DemoBanner'
 
 export default function RestaurantLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname()
@@ -58,6 +59,7 @@ export default function RestaurantLayout({ children }: { children: React.ReactNo
 
   return (
     <div className="min-h-screen bg-[#F8F9FA] flex">
+      <DemoBanner />
       {/* Sidebar - Desktop */}
       <aside className="hidden md:flex flex-col w-64 bg-white border-r border-[#E5E5E5] fixed h-full">
         {/* Logo */}

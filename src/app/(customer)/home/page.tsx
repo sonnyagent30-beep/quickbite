@@ -2,19 +2,13 @@
 
 import { useState, useEffect } from 'react'
 import RestaurantCard from '@/components/RestaurantCard'
+import { DEMO_RESTAURANTS } from '@/lib/demo-data'
+import { getSession } from '@/lib/demo-auth'
+import { Restaurant } from '@/lib/types'
 
-interface Restaurant {
-  id: string
-  name: string
-  description: string
-  cuisine_type: string
-  address: string
-  rating: number
+// Extended type for demo mode — adds fields needed by UI
+interface DemoRestaurant extends Restaurant {
   rating_count: number
-  is_open: boolean
-  min_order: number
-  delivery_fee: number
-  image_url: string
   distance?: number
 }
 
@@ -72,6 +66,33 @@ export default function HomePage() {
   }, [])
 
   const fetchRestaurants = async () => {
+    // Check if we're in demo mode
+    const session = getSession()
+    
+    if (session) {
+      // Use demo data in demo mode
+      const demoRestaurants = DEMO_RESTAURANTS.map(r => ({
+        id: r.id,
+        name: r.name,
+        description: r.description || '',
+        cuisine_type: r.cuisine_type || '',
+        address: 'Lagos, Nigeria',
+        rating: r.rating,
+        rating_count: 127,
+        is_open: true,
+        min_order: r.min_order,
+        delivery_fee: r.delivery_fee,
+        image_url: r.image_url || '',
+        distance: 1.2,
+        owner_id: 'demo-owner-1',
+        location_lat: 6.5994,
+        location_lng: 3.3419,
+      }))
+      setRestaurants(demoRestaurants)
+      setLoading(false)
+      return
+    }
+
     try {
       const response = await fetch('/api/restaurants?lat=6.5994&lng=3.3419&radius=20')
       const data = await response.json()
@@ -86,10 +107,10 @@ export default function HomePage() {
   const filteredRestaurants = restaurants.filter(r => {
     const matchesCategory =
       selectedCategory === 'all' ||
-      r.cuisine_type.toLowerCase() === selectedCategory.toLowerCase()
+      (r.cuisine_type || '').toLowerCase() === selectedCategory.toLowerCase()
     const matchesSearch =
       r.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      r.cuisine_type.toLowerCase().includes(searchQuery.toLowerCase())
+      (r.cuisine_type || '').toLowerCase().includes(searchQuery.toLowerCase())
     return matchesCategory && matchesSearch
   })
 

@@ -5,6 +5,7 @@ import './globals.css'
 import { CartProvider } from '@/lib/cart-context'
 import AppShell from '@/components/AppShell'
 import BottomNav from '@/components/BottomNav'
+import DemoBanner from '@/components/DemoBanner'
 
 const poppins = Poppins({
   subsets: ['latin'],
@@ -56,6 +57,7 @@ export default function RootLayout({
   return (
     <html lang="en" className={`${poppins.variable} ${inter.variable} ${jetbrainsMono.variable}`}>
       <body className="min-h-screen bg-[#FEFEFE] antialiased font-sans">
+        <DemoBanner />
         <Suspense fallback={<div className="min-h-screen bg-[#FEFEFE]" />}>
           <CartProvider>
             <AppShell>

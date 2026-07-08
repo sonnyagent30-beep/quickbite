@@ -2,6 +2,7 @@
 
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
+import DemoBanner from '@/components/DemoBanner'
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname()
@@ -70,6 +71,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
 
   return (
     <div className="min-h-screen bg-[#F8F9FA] flex">
+      <DemoBanner />
       {/* Sidebar - Desktop */}
       <aside className="hidden lg:flex flex-col w-64 bg-[#1B4332] text-white fixed h-full">
         {/* Logo */}

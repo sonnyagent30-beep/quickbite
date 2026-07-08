@@ -2,8 +2,8 @@ import { createClient } from '@supabase/supabase-js'
 import { NextResponse } from 'next/server'
 
 const supabase = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.SUPABASE_SERVICE_ROLE_KEY!
+  process.env.NEXT_PUBLIC_SUPABASE_URL || 'https://placeholder.supabase.co',
+  process.env.SUPABASE_SERVICE_ROLE_KEY || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBsYWNlaG9sZGVyIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTYwMDAwMDAwMCwiZXhwIjoyMDAwMDAwMDAwfQ.placeholder'
 )
 
 interface UserPayload {
@@ -97,7 +97,7 @@ const MOCK_ORDERS: Order[] = [
     delivered_at: null,
     restaurant: { id: 'rest-001', name: 'Chicken Republic', image_url: null },
     customer: { name: 'Emeka Nwosu', phone: '+2348055555555' },
-    rider: null
+    rider: undefined
   },
   {
     id: 'ord-004',
@@ -115,7 +115,7 @@ const MOCK_ORDERS: Order[] = [
     delivered_at: null,
     restaurant: { id: 'rest-003', name: 'Baba Jollof', image_url: null },
     customer: { name: 'Chidi Okafor', phone: '+2348012345678' },
-    rider: null
+    rider: undefined
   }
 ]
 
