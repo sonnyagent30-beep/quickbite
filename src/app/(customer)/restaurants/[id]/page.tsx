@@ -24,9 +24,11 @@ export default function RestaurantDetailPage() {
   const [loading, setLoading] = useState(true)
   const [activeCategory, setActiveCategory] = useState<string | null>(null)
   const categoryRefs = useRef<Record<string, HTMLElement | null>>({})
-  const { addItem, totalItems, items: cartItems } = useCart()
+  const { addItem, clearCart, totalItems, items: cartItems } = useCart()
   const [showCrossRestaurantModal, setShowCrossRestaurantModal] = useState(false)
   const [pendingItem, setPendingItem] = useState<MenuItem | null>(null)
+  const [showToast, setShowToast] = useState(false)
+  const [toastMessage, setToastMessage] = useState('')
 
   useEffect(() => {
     // Load restaurant and menu from DEMO_RESTAURANTS
@@ -41,16 +43,20 @@ export default function RestaurantDetailPage() {
       
       // Extract unique categories
       const uniqueCategories = Array.from(new Set(restaurantMenu.filter((item: MenuItem) => item.category).map((item: MenuItem) => item.category!)))
-      const categoryList: Category[] = uniqueCategories.map((cat: string, index: number) => ({
-        id: cat,
-        name: cat,
-        sort_order: index,
-      }))
+      
+      // Add "All" category at the beginning
+      const categoryList: Category[] = [
+        { id: 'all', name: 'All', sort_order: 0 },
+        ...uniqueCategories.map((cat: string, index: number) => ({
+          id: cat,
+          name: cat,
+          sort_order: index + 1,
+        }))
+      ]
       setCategories(categoryList)
       
-      if (categoryList.length > 0) {
-        setActiveCategory(categoryList[0].id)
-      }
+      // Set "All" as default active category
+      setActiveCategory('all')
     }
     
     setLoading(false)
@@ -74,14 +80,19 @@ export default function RestaurantDetailPage() {
       restaurant_id: restaurant.id,
       restaurant_name: restaurant.name,
     }, 1, () => {
+      // This callback runs when adding from a different restaurant
       setPendingItem(item)
       setShowCrossRestaurantModal(true)
     })
+    // Show toast notification
+    setToastMessage(`${item.name} added to cart`)
+    setShowToast(true)
+    setTimeout(() => setShowToast(false), 2000)
   }
 
   const confirmSwitchRestaurant = () => {
     if (!pendingItem || !restaurant) return
-    const { clearCart } = useCart()
+    // Clear cart first, then add the new item
     clearCart()
     addItem({
       menu_item_id: pendingItem.id,
@@ -93,6 +104,10 @@ export default function RestaurantDetailPage() {
     })
     setShowCrossRestaurantModal(false)
     setPendingItem(null)
+    // Show toast
+    setToastMessage(`${pendingItem.name} added to cart`)
+    setShowToast(true)
+    setTimeout(() => setShowToast(false), 2000)
   }
 
   const cancelSwitchRestaurant = () => {
@@ -105,13 +120,21 @@ export default function RestaurantDetailPage() {
     return cartItem?.quantity ?? 0
   }
 
-  // Group items by category
-  const itemsByCategory = categories.map((cat: Category) => {
-    return {
-      category: cat,
-      items: menuItems.filter((item: MenuItem) => item.category === cat.name),
+  // Get filtered items based on active category
+  const getFilteredItems = () => {
+    if (activeCategory === 'all') {
+      return menuItems
     }
-  })
+    return menuItems.filter((item: MenuItem) => item.category === activeCategory)
+  }
+
+  // Get category name for display
+  const getActiveCategoryName = () => {
+    if (activeCategory === 'all') return 'All Menu'
+    return activeCategory || ''
+  }
+
+  const filteredItems = getFilteredItems()
 
   if (loading) {
     return (
@@ -181,7 +204,7 @@ export default function RestaurantDetailPage() {
             </div>
             <span className="opacity-80">{restaurant.cuisine_type}</span>
             <span className="opacity-80">•</span>
-            <span className="opacity-80">20-30 min</span>
+            <span className="opacity-80">30-45 min</span>
             <span className="opacity-80">•</span>
             <span className="opacity-80">₦{restaurant.delivery_fee} delivery</span>
           </div>
@@ -209,29 +232,21 @@ export default function RestaurantDetailPage() {
         </div>
       )}
 
-      {/* Menu Items by Category */}
-      <div className="p-4 space-y-6">
-        {itemsByCategory.map(({ category, items }: { category: Category; items: MenuItem[] }) => (
-          <section
-            key={category.id}
-            ref={(el) => { categoryRefs.current[category.id] = el }}
-            className="scroll-mt-28"
-          >
-            <h2 className="text-lg font-bold text-[#1F1F1F] mb-3" style={{ fontFamily: 'var(--font-poppins)' }}>
-              {category.name}
-            </h2>
-            <div className="space-y-3">
-              {items.map((item: MenuItem) => (
-                <FoodItemCard
-                  key={item.id}
-                  item={item}
-                  onAdd={handleAddToCart}
-                  quantity={getItemQuantity(item.id)}
-                />
-              ))}
-            </div>
-          </section>
-        ))}
+      {/* Menu Items - Filtered by Category */}
+      <div className="p-4 space-y-4">
+        <h2 className="text-lg font-bold text-[#1F1F1F]" style={{ fontFamily: 'var(--font-poppins)' }}>
+          {getActiveCategoryName()}
+        </h2>
+        <div className="space-y-3">
+          {filteredItems.map((item: MenuItem) => (
+            <FoodItemCard
+              key={item.id}
+              item={item}
+              onAdd={handleAddToCart}
+              quantity={getItemQuantity(item.id)}
+            />
+          ))}
+        </div>
       </div>
 
       {/* Floating Cart Bar */}
@@ -251,6 +266,18 @@ export default function RestaurantDetailPage() {
           </div>
           <span className="font-bold">Checkout →</span>
         </Link>
+      )}
+
+      {/* Toast Notification */}
+      {showToast && (
+        <div className="fixed top-20 left-1/2 -translate-x-1/2 bg-[#333333] text-white px-4 py-2 rounded-full shadow-lg z-[60] animate-fade-in">
+          <div className="flex items-center gap-2">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M20 6 9 17l-5-5"/>
+            </svg>
+            <span className="text-sm font-medium">{toastMessage}</span>
+          </div>
+        </div>
       )}
 
       {/* Cross-Restaurant Warning Modal */}

@@ -13,16 +13,20 @@ export default function OrdersPage() {
     fetchOrders()
   }, [])
 
-  const fetchOrders = async () => {
+  const fetchOrders = () => {
     try {
-      const response = await fetch('/api/orders')
-      if (response.ok) {
-        const data = await response.json()
-        setOrders(data.orders || [])
-      } else {
-        // Fall back to demo data
-        setOrders(DEMO_ORDERS)
+      // First try to get orders from localStorage (new orders from checkout)
+      const localOrders = localStorage.getItem('quickbite_orders')
+      if (localOrders) {
+        const parsed = JSON.parse(localOrders)
+        if (parsed.length > 0) {
+          setOrders(parsed)
+          setLoading(false)
+          return
+        }
       }
+      // Fall back to demo data if no local orders
+      setOrders(DEMO_ORDERS)
     } catch (error) {
       console.error('Failed to fetch orders:', error)
       // Fall back to demo data

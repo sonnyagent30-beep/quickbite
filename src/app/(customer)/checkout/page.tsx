@@ -9,11 +9,11 @@ import { DEMO_RESTAURANTS } from '@/lib/demo-data'
 export default function CheckoutPage() {
   const router = useRouter()
   const { items, restaurantId, restaurantName, subtotal, clearCart } = useCart()
-  const [deliveryAddress, setDeliveryAddress] = useState('')
+  const [deliveryAddress, setDeliveryAddress] = useState('15 Admiralty Way, Lekki Phase 1, Lagos')
   const [deliveryInstructions, setDeliveryInstructions] = useState('')
   const [paymentMethod, setPaymentMethod] = useState<'cod' | 'card'>('cod')
   const [isProcessing, setIsProcessing] = useState(false)
-  const [phoneNumber, setPhoneNumber] = useState('')
+  const [phoneNumber, setPhoneNumber] = useState('+234 801 111 1111')
   
   // Get delivery fee from restaurant if available
   const restaurant = DEMO_RESTAURANTS.find(r => r.id === restaurantId)
@@ -70,7 +70,10 @@ export default function CheckoutPage() {
     localStorage.setItem('quickbite_orders', JSON.stringify(existingOrders))
     
     clearCart()
-    router.push(`/orders?orderId=${orderId}`)
+    
+    // Show success message then redirect
+    alert(`Order placed! Order ID: ${orderId}`)
+    router.push('/orders')
   }
 
   if (items.length === 0) {
