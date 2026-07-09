@@ -2,25 +2,12 @@
 
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
-import { useCart } from '@/lib/cart-context'
-
-interface Order {
-  id: string
-  restaurant_name: string
-  status: 'pending' | 'confirmed' | 'preparing' | 'dispatched' | 'delivered' | 'cancelled'
-  total: number
-  created_at: string
-  items: Array<{
-    name: string
-    quantity: number
-  }>
-}
+import { DEMO_ORDERS, DemoOrder } from '@/lib/demo-data'
 
 export default function OrdersPage() {
-  const [orders, setOrders] = useState<Order[]>([])
+  const [orders, setOrders] = useState<DemoOrder[]>([])
   const [loading, setLoading] = useState(true)
   const [activeTab, setActiveTab] = useState<'active' | 'past'>('active')
-  const { addItem } = useCart()
 
   useEffect(() => {
     fetchOrders()
@@ -32,16 +19,21 @@ export default function OrdersPage() {
       if (response.ok) {
         const data = await response.json()
         setOrders(data.orders || [])
+      } else {
+        // Fall back to demo data
+        setOrders(DEMO_ORDERS)
       }
     } catch (error) {
       console.error('Failed to fetch orders:', error)
+      // Fall back to demo data
+      setOrders(DEMO_ORDERS)
     } finally {
       setLoading(false)
     }
   }
 
   const activeOrders = orders.filter(o => 
-    ['pending', 'confirmed', 'preparing', 'dispatched'].includes(o.status)
+    ['pending', 'confirmed', 'preparing', 'dispatched', 'ready'].includes(o.status)
   )
   const pastOrders = orders.filter(o => 
     ['delivered', 'cancelled'].includes(o.status)
@@ -51,12 +43,13 @@ export default function OrdersPage() {
 
   const getStatusBadge = (status: string) => {
     const statusStyles: Record<string, { bg: string; text: string; label: string }> = {
-      pending: { bg: 'bg-[#FFF3CD]', text: 'text-[#1A1A1A]', label: 'Pending' },
-      confirmed: { bg: 'bg-[#0D6EFD]/10', text: 'text-[#0D6EFD]', label: 'Confirmed' },
-      preparing: { bg: 'bg-[#FD7E14]/10', text: 'text-[#FD7E14]', label: 'Preparing' },
-      dispatched: { bg: 'bg-[#2D6A4F]/10', text: 'text-[#2D6A4F]', label: 'On the way' },
-      delivered: { bg: 'bg-[#198754]/10', text: 'text-[#198754]', label: 'Delivered' },
-      cancelled: { bg: 'bg-[#DC3545]/10', text: 'text-[#DC3545]', label: 'Cancelled' },
+      pending: { bg: 'bg-amber-100', text: 'text-amber-700', label: 'Pending' },
+      confirmed: { bg: 'bg-blue-100', text: 'text-blue-700', label: 'Confirmed' },
+      preparing: { bg: 'bg-blue-100', text: 'text-blue-700', label: 'Preparing' },
+      ready: { bg: 'bg-green-100', text: 'text-green-700', label: 'Ready' },
+      dispatched: { bg: 'bg-blue-100', text: 'text-blue-700', label: 'On the way' },
+      delivered: { bg: 'bg-gray-100', text: 'text-gray-700', label: 'Delivered' },
+      cancelled: { bg: 'bg-red-100', text: 'text-red-700', label: 'Cancelled' },
     }
     const style = statusStyles[status] || statusStyles.pending
     return (
@@ -77,12 +70,6 @@ export default function OrdersPage() {
     if (diffMins < 60) return `${diffMins}m ago`
     if (diffHours < 24) return `${diffHours}h ago`
     return `${diffDays}d ago`
-  }
-
-  const handleReorder = (order: Order) => {
-    // This would need to fetch the original items
-    // For now, just navigate to the restaurant
-    alert('Reorder feature would add items from ' + order.restaurant_name)
   }
 
   return (
@@ -147,8 +134,18 @@ export default function OrdersPage() {
                 <path d="M16 10a4 4 0 0 1-8 0"/>
               </svg>
             </div>
-            <h3 className="text-lg font-semibold text-[#1A1A1A] mb-1">No orders yet</h3>
-            <p className="text-sm text-[#666666]">Your orders will appear here</p>
+            <h3 className="text-lg font-semibold text-[#1A1A1A] mb-1">
+              {activeTab === 'active' ? 'No active orders' : 'No past orders'}
+            </h3>
+            <p className="text-sm text-[#666666]">
+              {activeTab === 'active' ? 'Your active orders will appear here' : 'Your order history will appear here'}
+            </p>
+            <Link 
+              href="/"
+              className="inline-block mt-4 px-6 py-2 bg-[#E85D04] text-white font-medium rounded-full hover:bg-[#D45103] transition-colors"
+            >
+              Browse Restaurants
+            </Link>
           </div>
         ) : (
           displayedOrders.map((order) => (
@@ -175,7 +172,7 @@ export default function OrdersPage() {
                     <button
                       onClick={(e) => {
                         e.preventDefault()
-                        handleReorder(order)
+                        alert('Reorder feature - add items from ' + order.restaurant_name)
                       }}
                       className="px-4 py-2 text-sm font-medium text-[#E85D04] border border-[#E85D04] rounded-full hover:bg-[#E85D04] hover:text-white transition-colors"
                     >
