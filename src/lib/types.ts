@@ -9,6 +9,7 @@ export interface MenuItem {
   description?: string;
   price: number;
   image_url?: string;
+  delivery_time?: string;
   is_available?: boolean;
   created_at?: string;
   category_name?: string; // used in restaurant portal
@@ -30,6 +31,7 @@ export interface Restaurant {
   delivery_fee?: number;
   image_url?: string;
   distance?: number;
+  delivery_time?: string;
   created_at?: string;
 }
 
