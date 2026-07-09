@@ -1,293 +1,331 @@
 'use client'
 
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import Link from 'next/link'
 
-export default function LandingPage() {
+// Floating food emoji component
+function FloatingFood({ emoji, delay, left }: { emoji: string; delay: number; left: string }) {
+  return (
+    <div
+      className="absolute text-4xl opacity-20 animate-float pointer-events-none"
+      style={{
+        left,
+        animationDelay: `${delay}s`,
+        top: `${20 + Math.random() * 60}%`,
+      }}
+    >
+      {emoji}
+    </div>
+  )
+}
+
+// Counter animation hook
+function useCountUp(end: number, duration = 2000) {
+  const [count, setCount] = useState(0)
   useEffect(() => {
-    // If already logged in with onboarding complete, redirect to /home
-    try {
-      const user = localStorage.getItem('quickbite_user')
-      const onboardingComplete = localStorage.getItem('onboarding_complete')
-      if (user && onboardingComplete === 'true') {
-        window.location.href = '/home'
+    let start = 0
+    const increment = end / (duration / 16)
+    const timer = setInterval(() => {
+      start += increment
+      if (start >= end) {
+        setCount(end)
+        clearInterval(timer)
+      } else {
+        setCount(Math.floor(start))
       }
-    } catch (e) {
-      // localStorage not available or corrupted data
-    }
-  }, [])
+    }, 16)
+    return () => clearInterval(timer)
+  }, [end, duration])
+  return count
+}
+
+export default function LandingPage() {
+  const [mounted, setMounted] = useState(false)
+  useEffect(() => setMounted(true), [])
+
+  const stats = [
+    { value: 500, suffix: '+', label: 'Partner Kitchens' },
+    { value: 10000, suffix: '+', label: 'Orders Placed' },
+    { value: 50, suffix: '+', label: 'Neighborhoods' },
+    { value: 4.8, suffix: '', label: 'Average Rating', decimal: true },
+  ]
 
   return (
-    <div className="min-h-screen bg-[#FEFEFE]">
+    <div className="min-h-screen overflow-x-hidden">
       {/* Navigation */}
-      <nav className="fixed top-0 left-0 right-0 z-50 bg-[#1B4332]/95 backdrop-blur-sm">
-        <div className="container mx-auto px-4 py-3 flex items-center justify-between">
-          <Link href="/" className="flex items-center gap-2">
-            <div className="w-8 h-8 rounded-full bg-[#E85D04] flex items-center justify-center">
-              <span className="text-white font-bold text-sm">QB</span>
+      <nav className="fixed top-0 left-0 right-0 z-50 bg-white/80 backdrop-blur-lg border-b border-gray-100">
+        <div className="max-w-6xl mx-auto px-6 py-4 flex items-center justify-between">
+          <Link href="/" className="flex items-center gap-3">
+            <div className="w-10 h-10 rounded-2xl bg-gradient-to-br from-[#FF6B00] to-[#FF4500] flex items-center justify-center shadow-lg">
+              <span className="text-white font-black text-sm">QB</span>
             </div>
-            <span className="font-semibold text-white text-lg" style={{ fontFamily: 'var(--font-poppins)' }}>
-              QuickBite
-            </span>
+            <span className="font-bold text-gray-900 text-xl tracking-tight">QuickBite</span>
           </Link>
-          <div className="flex items-center gap-4">
-            <Link href="/login" className="text-white/80 hover:text-white text-sm font-medium transition-colors">
+          <div className="flex items-center gap-3">
+            <Link href="/login" className="px-5 py-2.5 text-gray-700 font-medium hover:text-gray-900 transition-colors">
               Sign In
             </Link>
-            <Link 
-              href="/register" 
-              className="bg-[#E85D04] hover:bg-[#D45103] text-white px-4 py-2 rounded-full text-sm font-medium transition-colors"
-            >
-              Sign Up
+            <Link href="/register" className="px-5 py-2.5 bg-gradient-to-r from-[#FF6B00] to-[#FF4500] text-white font-semibold rounded-full hover:shadow-lg hover:shadow-orange-500/30 transition-all hover:-translate-y-0.5">
+              Get Started
             </Link>
           </div>
         </div>
       </nav>
 
       {/* Hero Section */}
-      <section className="relative bg-[#1B4332] text-white overflow-hidden min-h-[90vh] flex items-center">
-        {/* Background Image */}
+      <section className="relative min-h-screen flex items-center justify-center overflow-hidden bg-gradient-to-br from-[#0a1628] via-[#1a2744] to-[#0a1628]">
+        {/* Animated background elements */}
         <div className="absolute inset-0">
-          <img 
-            src="https://images.unsplash.com/photo-1564671165093-20688ff1fffa?w=1400&q=85&fit=crop" 
-            alt="Nigerian food spread"
-            className="w-full h-full object-cover opacity-50"
-          />
-          <div className="absolute inset-0 bg-gradient-to-t from-[#1B4332] via-[#1B4332]/70 to-transparent" />
+          {/* Grid pattern */}
+          <div className="absolute inset-0 opacity-5" style={{ backgroundImage: 'radial-gradient(circle, white 1px, transparent 1px)', backgroundSize: '40px 40px' }} />
+          {/* Gradient orbs */}
+          <div className="absolute top-20 left-10 w-72 h-72 bg-[#FF6B00] rounded-full blur-[120px] opacity-20 animate-pulse" />
+          <div className="absolute bottom-20 right-10 w-96 h-96 bg-[#FF4500] rounded-full blur-[150px] opacity-15 animate-pulse" style={{ animationDelay: '1s' }} />
+          <div className="absolute top-1/2 left-1/2 w-64 h-64 bg-yellow-500 rounded-full blur-[100px] opacity-10 animate-pulse" style={{ animationDelay: '2s' }} />
         </div>
 
-        <div className="container relative z-10 py-24 md:py-32">
-          <div className="max-w-3xl mx-auto text-center">
-            <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold mb-6 leading-tight" style={{ fontFamily: 'var(--font-poppins)' }}>
-              Your Favorite Local <span className="text-[#E85D04]">Bukas</span>,<br/>One Order Away
-            </h1>
-            <p className="text-lg md:text-xl text-white/90 mb-10 max-w-2xl mx-auto">
-              Discover authentic Nigerian cuisine from trusted local kitchens in your neighborhood. From smoky Jollof to delicious Amala — taste the magic of local flavors, delivered fresh to your door.
-            </p>
+        {/* Floating food */}
+        {mounted && (
+          <>
+            <FloatingFood emoji="🍲" delay={0} left="5%" />
+            <FloatingFood emoji="🍛" delay={0.5} left="15%" />
+            <FloatingFood emoji="🌶️" delay={1} left="25%" />
+            <FloatingFood emoji="🍗" delay={1.5} left="75%" />
+            <FloatingFood emoji="🥘" delay={2} left="85%" />
+            <FloatingFood emoji="🍳" delay={0.3} left="92%" />
+          </>
+        )}
 
-            {/* CTA Buttons */}
-            <div className="flex flex-col sm:flex-row gap-4 justify-center mb-16">
-              <Link 
-                href="/register"
-                className="bg-[#E85D04] hover:bg-[#D45103] text-white font-semibold px-8 py-4 rounded-full transition-colors shadow-lg inline-flex items-center justify-center gap-2"
-              >
-                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                  <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/>
-                  <circle cx="9" cy="7" r="4"/>
-                  <line x1="19" x2="19" y1="8" y2="14"/>
-                  <line x1="22" x2="16" y1="11" y2="11"/>
-                </svg>
-                Get Started
-              </Link>
-              <Link 
-                href="/login"
-                className="bg-white/10 hover:bg-white/20 backdrop-blur-sm border-2 border-white/30 text-white font-semibold px-8 py-4 rounded-full transition-colors inline-flex items-center justify-center gap-2"
-              >
-                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                  <path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/>
-                  <polyline points="10 17 15 12 10 7"/>
-                  <line x1="15" x2="3" y1="12" y2="12"/>
-                </svg>
-                Sign In
-              </Link>
-            </div>
+        {/* Hero content */}
+        <div className="relative z-10 max-w-5xl mx-auto px-6 text-center pt-24">
+          {/* Badge */}
+          <div className={`inline-flex items-center gap-2 bg-white/10 backdrop-blur-sm border border-white/20 rounded-full px-4 py-2 mb-8 transition-all duration-700 ${mounted ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'}`}>
+            <span className="w-2 h-2 bg-green-400 rounded-full animate-ping" />
+            <span className="text-white/80 text-sm font-medium">Now serving across Lagos</span>
           </div>
 
-          {/* Stats Bar */}
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-6 md:gap-8 max-w-4xl mx-auto pt-8 border-t border-white/20">
-            <div className="text-center">
-              <div className="text-3xl md:text-4xl font-bold text-[#E85D04] mb-1">500+</div>
-              <div className="text-sm text-white/70">Partner Kitchens</div>
+          {/* Headline */}
+          <h1 className={`text-5xl md:text-7xl lg:text-8xl font-black text-white leading-[1.1] mb-6 transition-all duration-700 delay-100 ${mounted ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`}>
+            Your Favorite
+            <br />
+            <span className="bg-gradient-to-r from-[#FF6B00] via-[#FF8C00] to-[#FFA500] bg-clip-text text-transparent">
+              Local Bukas
+            </span>
+            <br />
+            One Order Away
+          </h1>
+
+          {/* Subheadline */}
+          <p className={`text-lg md:text-xl text-white/60 max-w-2xl mx-auto mb-10 transition-all duration-700 delay-200 ${mounted ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`}>
+            Authentic Nigerian cuisine from verified local kitchens,
+            delivered fresh to your doorstep in minutes.
+          </p>
+
+          {/* CTA Buttons */}
+          <div className={`flex flex-col sm:flex-row gap-4 justify-center mb-16 transition-all duration-700 delay-300 ${mounted ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`}>
+            <Link href="/register" className="group px-8 py-4 bg-gradient-to-r from-[#FF6B00] to-[#FF4500] text-white font-bold rounded-full text-lg hover:shadow-2xl hover:shadow-orange-500/40 transition-all hover:-translate-y-1 flex items-center justify-center gap-2">
+              <span>Order Food Now</span>
+              <svg className="w-5 h-5 group-hover:translate-x-1 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
+              </svg>
+            </Link>
+            <Link href="/login" className="px-8 py-4 bg-white/10 backdrop-blur-sm border-2 border-white/30 text-white font-semibold rounded-full text-lg hover:bg-white/20 transition-all hover:-translate-y-1">
+              Sign In
+            </Link>
+          </div>
+
+          {/* Trust indicators */}
+          <div className={`flex flex-col sm:flex-row items-center justify-center gap-6 transition-all duration-700 delay-500 ${mounted ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`}>
+            <div className="flex -space-x-3">
+              {['👨‍👩‍👧', '👨‍👦', '👩‍👩‍👧‍👦', '👨‍🏫'].map((emoji, i) => (
+                <div key={i} className="w-10 h-10 rounded-full bg-gradient-to-br from-orange-200 to-orange-300 border-2 border-[#0a1628] flex items-center justify-center text-lg">
+                  {emoji}
+                </div>
+              ))}
             </div>
-            <div className="text-center">
-              <div className="text-3xl md:text-4xl font-bold text-[#E85D04] mb-1">10,000+</div>
-              <div className="text-sm text-white/70">Orders Placed</div>
-            </div>
-            <div className="text-center">
-              <div className="text-3xl md:text-4xl font-bold text-[#E85D04] mb-1">50+</div>
-              <div className="text-sm text-white/70">Neighborhoods</div>
-            </div>
-            <div className="text-center">
-              <div className="text-3xl md:text-4xl font-bold text-[#E85D04] mb-1">4.8</div>
-              <div className="text-sm text-white/70">Average Rating</div>
+            <div className="text-left">
+              <div className="flex items-center gap-1 text-yellow-400 mb-0.5">
+                {[1,2,3,4,5].map(i => (
+                  <svg key={i} className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                    <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                  </svg>
+                ))}
+              </div>
+              <p className="text-white/40 text-sm">Trusted by <span className="text-white font-semibold">15,000+</span> customers</p>
             </div>
           </div>
         </div>
 
-        {/* Wave Decoration */}
-        <div className="absolute bottom-0 left-0 right-0">
-          <svg viewBox="0 0 1200 120" preserveAspectRatio="none" className="w-full h-16 md:h-24">
-            <path d="M0,60 C300,120 600,0 900,60 C1050,90 1150,90 1200,60 L1200,120 L0,120 Z" fill="#FEFEFE"/>
+        {/* Scroll indicator */}
+        <div className="absolute bottom-8 left-1/2 -translate-x-1/2 animate-bounce">
+          <svg className="w-6 h-6 text-white/30" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 14l-7 7m0 0l-7-7m7 7V3" />
           </svg>
         </div>
       </section>
 
-      {/* How QuickBite Works Section */}
-      <section className="py-20 bg-[#FEFEFE]">
-        <div className="container">
-          <div className="text-center mb-14">
-            <h2 className="text-3xl md:text-4xl font-bold text-[#1B4332] mb-3" style={{ fontFamily: 'var(--font-poppins)' }}>
-              How QuickBite Works
-            </h2>
-            <p className="text-[#666666] max-w-md mx-auto">
-              Getting your favorite local food has never been easier
-            </p>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            {/* Step 1 */}
-            <div className="bg-white rounded-2xl overflow-hidden shadow-lg hover:shadow-xl transition-shadow group">
-              <div className="h-48 overflow-hidden">
-                <img 
-                  src="https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?w=600&q=80" 
-                  alt="Browse Local Kitchens"
-                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-                />
-              </div>
-              <div className="p-6">
-                <div className="w-12 h-12 bg-[#1B4332] rounded-full flex items-center justify-center mb-4">
-                  <span className="text-white font-bold text-lg">1</span>
+      {/* Stats Section */}
+      <section className="relative py-20 bg-gradient-to-r from-[#FF6B00] to-[#FF4500]">
+        <div className="max-w-6xl mx-auto px-6">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-8 md:gap-4">
+            {stats.map((stat, i) => (
+              <div key={i} className="text-center">
+                <div className="text-4xl md:text-5xl font-black text-white mb-1">
+                  {stat.decimal ? stat.value : useCountUp(stat.value).toLocaleString()}
+                  <span className="text-white/70">{stat.suffix}</span>
                 </div>
-                <h3 className="font-semibold text-[#1A1A1A] mb-2 text-lg">Browse Local Kitchens</h3>
-                <p className="text-sm text-[#666666]">Explore authentic Nigerian dishes from verified bukas and kitchens in your area</p>
+                <div className="text-white/70 font-medium text-sm md:text-base">{stat.label}</div>
               </div>
-            </div>
-
-            {/* Step 2 */}
-            <div className="bg-white rounded-2xl overflow-hidden shadow-lg hover:shadow-xl transition-shadow group">
-              <div className="h-48 overflow-hidden">
-                <img 
-                  src="https://images.unsplash.com/photo-1504674900247-0877df9cc836?w=600&q=80" 
-                  alt="Place Your Order"
-                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-                />
-              </div>
-              <div className="p-6">
-                <div className="w-12 h-12 bg-[#E85D04] rounded-full flex items-center justify-center mb-4">
-                  <span className="text-white font-bold text-lg">2</span>
-                </div>
-                <h3 className="font-semibold text-[#1A1A1A] mb-2 text-lg">Place Your Order</h3>
-                <p className="text-sm text-[#666666]">Add your favorite dishes to cart and pay securely online or on delivery</p>
-              </div>
-            </div>
-
-            {/* Step 3 */}
-            <div className="bg-white rounded-2xl overflow-hidden shadow-lg hover:shadow-xl transition-shadow group">
-              <div className="h-48 overflow-hidden">
-                <img 
-                  src="https://images.unsplash.com/photo-1567620905732-2d1ec7ab7445?w=600&q=80" 
-                  alt="Collect Your Food"
-                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-                />
-              </div>
-              <div className="p-6">
-                <div className="w-12 h-12 bg-[#1B4332] rounded-full flex items-center justify-center mb-4">
-                  <span className="text-white font-bold text-lg">3</span>
-                </div>
-                <h3 className="font-semibold text-[#1A1A1A] mb-2 text-lg">Collect Your Food</h3>
-                <p className="text-sm text-[#666666]">Track your order in real-time and enjoy hot, fresh Nigerian cuisine at home</p>
-              </div>
-            </div>
+            ))}
           </div>
         </div>
       </section>
 
-      {/* Popular This Week Section */}
-      <section className="py-20 bg-[#F8F9FA]">
-        <div className="container">
-          <div className="text-center mb-14">
-            <h2 className="text-3xl md:text-4xl font-bold text-[#1B4332] mb-3" style={{ fontFamily: 'var(--font-poppins)' }}>
-              Popular This Week
-            </h2>
-            <p className="text-[#666666] max-w-md mx-auto">
-              Top-rated dishes our customers love
-            </p>
+      {/* How It Works */}
+      <section className="py-24 bg-[#FAFAFA]">
+        <div className="max-w-6xl mx-auto px-6">
+          <div className="text-center mb-16">
+            <span className="text-[#FF6B00] font-bold uppercase tracking-widest text-sm mb-4 block">Simple Process</span>
+            <h2 className="text-4xl md:text-5xl font-black text-gray-900 mb-4">How QuickBite Works</h2>
+            <p className="text-gray-500 text-lg max-w-md mx-auto">Getting your favorite local food has never been easier</p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-5xl mx-auto">
-            {/* Jollof Rice */}
-            <div className="bg-white rounded-2xl overflow-hidden shadow-lg hover:shadow-xl transition-shadow">
-              <div className="h-56 overflow-hidden relative">
-                <img 
-                  src="https://images.unsplash.com/photo-1574894709920-11b28e7367e3?w=600&q=80" 
-                  alt="Jollof Rice and Chicken"
-                  className="w-full h-full object-cover"
-                />
-                <div className="absolute top-3 right-3 bg-white/90 backdrop-blur-sm px-3 py-1 rounded-full">
-                  <div className="flex items-center gap-1">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="#FFB703" stroke="none">
-                      <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
-                    </svg>
-                    <span className="text-sm font-medium text-[#1A1A1A]">4.9</span>
+          <div className="grid md:grid-cols-3 gap-8">
+            {[
+              { step: '01', title: 'Browse Local Kitchens', desc: 'Explore authentic Nigerian dishes from verified bukas in your area', icon: '🔍', img: 'https://images.unsplash.com/photo-1555396273-367ea4eb4db5?w=600&q=80' },
+              { step: '02', title: 'Place Your Order', desc: 'Add your favorite dishes to cart and checkout in seconds', icon: '🛒', img: 'https://images.unsplash.com/photo-1606787366850-de6330128a71?w=600&q=80' },
+              { step: '03', title: 'Collect Your Food', desc: 'Track your order in real-time and enjoy fresh, hot delivery', icon: '🍽️', img: 'https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?w=600&q=80' },
+            ].map((item, i) => (
+              <div key={i} className="group bg-white rounded-3xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-300 hover:-translate-y-2">
+                <div className="h-48 overflow-hidden">
+                  <img src={item.img} alt={item.title} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" />
+                </div>
+                <div className="p-6">
+                  <div className="flex items-center gap-4 mb-3">
+                    <span className="text-4xl">{item.icon}</span>
+                    <span className="text-5xl font-black text-gray-200">{item.step}</span>
                   </div>
+                  <h3 className="text-xl font-bold text-gray-900 mb-2">{item.title}</h3>
+                  <p className="text-gray-500 text-sm leading-relaxed">{item.desc}</p>
                 </div>
               </div>
-              <div className="p-5">
-                <h3 className="font-semibold text-[#1A1A1A] mb-1">Jollof Rice and Chicken</h3>
-                <p className="text-sm text-[#666666] mb-3">Smoky, flavorful jollof with succulent grilled chicken</p>
-                <div className="flex items-center justify-between">
-                  <span className="text-lg font-bold text-[#E85D04]">₦3,500</span>
-                  <button className="bg-[#1B4332] hover:bg-[#2D6A4F] text-white px-4 py-2 rounded-full text-sm font-medium transition-colors">
-                    Add to Cart
-                  </button>
-                </div>
-              </div>
-            </div>
+            ))}
+          </div>
+        </div>
+      </section>
 
-            {/* Amala */}
-            <div className="bg-white rounded-2xl overflow-hidden shadow-lg hover:shadow-xl transition-shadow">
-              <div className="h-56 overflow-hidden relative">
-                <img 
-                  src="https://images.unsplash.com/photo-1567620905732-2d1ec7ab7445?w=600&q=80" 
-                  alt="Amala and Ewedu"
-                  className="w-full h-full object-cover"
-                />
-                <div className="absolute top-3 right-3 bg-white/90 backdrop-blur-sm px-3 py-1 rounded-full">
-                  <div className="flex items-center gap-1">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="#FFB703" stroke="none">
-                      <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
-                    </svg>
-                    <span className="text-sm font-medium text-[#1A1A1A]">4.8</span>
-                  </div>
-                </div>
-              </div>
-              <div className="p-5">
-                <h3 className="font-semibold text-[#1A1A1A] mb-1">Amala and Ewedu</h3>
-                <p className="text-sm text-[#666666] mb-3">Traditional amala with fresh ewedu and spicy goat meat</p>
-                <div className="flex items-center justify-between">
-                  <span className="text-lg font-bold text-[#E85D04]">₦2,200</span>
-                  <button className="bg-[#1B4332] hover:bg-[#2D6A4F] text-white px-4 py-2 rounded-full text-sm font-medium transition-colors">
-                    Add to Cart
-                  </button>
-                </div>
-              </div>
-            </div>
+      {/* Popular This Week */}
+      <section className="py-24 bg-white">
+        <div className="max-w-6xl mx-auto px-6">
+          <div className="text-center mb-16">
+            <span className="text-[#FF6B00] font-bold uppercase tracking-widest text-sm mb-4 block">What&apos;s Cooking</span>
+            <h2 className="text-4xl md:text-5xl font-black text-gray-900 mb-4">Popular This Week</h2>
+            <p className="text-gray-500 text-lg">Our most ordered dishes this week</p>
+          </div>
 
-            {/* Suya Pizza */}
-            <div className="bg-white rounded-2xl overflow-hidden shadow-lg hover:shadow-xl transition-shadow">
-              <div className="h-56 overflow-hidden relative">
-                <img 
-                  src="https://images.unsplash.com/photo-1544025162-d76694265947?w=600&q=80" 
-                  alt="Suya Pizza"
-                  className="w-full h-full object-cover"
-                />
-                <div className="absolute top-3 right-3 bg-white/90 backdrop-blur-sm px-3 py-1 rounded-full">
-                  <div className="flex items-center gap-1">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="#FFB703" stroke="none">
-                      <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
+          <div className="grid md:grid-cols-3 gap-8">
+            {[
+              { name: 'Jollof Rice & Chicken', price: '₦3,500', rating: '4.9', time: '20-30 min', img: 'https://images.unsplash.com/photo-1574894709920-11b28e7367e3?w=600&q=80', badge: '🔥 Most Popular' },
+              { name: 'Amala & Ewedu', price: '₦2,200', rating: '4.8', time: '15-25 min', img: 'https://images.unsplash.com/photo-1567620905732-2d1ec7ab7445?w=600&q=80', badge: '⭐ Customer Favorite' },
+              { name: 'Suya Pizza', price: '₦5,500', rating: '4.7', time: '25-35 min', img: 'https://images.unsplash.com/photo-1544025162-d76694265947?w=600&q=80', badge: '🆕 New' },
+            ].map((dish, i) => (
+              <div key={i} className="group bg-white border border-gray-100 rounded-3xl overflow-hidden hover:shadow-2xl transition-all duration-300 hover:-translate-y-1">
+                <div className="relative h-48 overflow-hidden">
+                  <img src={dish.img} alt={dish.name} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" />
+                  <div className="absolute top-3 left-3 bg-black/70 backdrop-blur-sm text-white text-xs font-bold px-3 py-1 rounded-full">
+                    {dish.badge}
+                  </div>
+                  <div className="absolute bottom-3 right-3 bg-white/90 backdrop-blur-sm rounded-full px-3 py-1 flex items-center gap-1">
+                    <svg className="w-3 h-3 text-yellow-500" fill="currentColor" viewBox="0 0 20 20">
+                      <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
                     </svg>
-                    <span className="text-sm font-medium text-[#1A1A1A]">4.7</span>
+                    <span className="text-xs font-bold">{dish.rating}</span>
+                  </div>
+                </div>
+                <div className="p-5">
+                  <h3 className="font-bold text-gray-900 text-lg mb-1">{dish.name}</h3>
+                  <div className="flex items-center justify-between">
+                    <span className="text-[#FF6B00] font-black text-xl">{dish.price}</span>
+                    <span className="text-gray-400 text-sm flex items-center gap-1">
+                      <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                      </svg>
+                      {dish.time}
+                    </span>
                   </div>
                 </div>
               </div>
-              <div className="p-5">
-                <h3 className="font-semibold text-[#1A1A1A] mb-1">Suya Pizza</h3>
-                <p className="text-sm text-[#666666] mb-3">Nigerian-style pizza topped with spicy suya beef</p>
-                <div className="flex items-center justify-between">
-                  <span className="text-lg font-bold text-[#E85D04]">₦5,500</span>
-                  <button className="bg-[#1B4332] hover:bg-[#2D6A4F] text-white px-4 py-2 rounded-full text-sm font-medium transition-colors">
-                    Add to Cart
-                  </button>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Restaurant Owners Section */}
+      <section className="py-24 bg-gradient-to-br from-[#0a1628] via-[#1a2744] to-[#0a1628] relative overflow-hidden">
+        {/* Background orbs */}
+        <div className="absolute top-0 right-0 w-96 h-96 bg-[#FF6B00] rounded-full blur-[200px] opacity-10" />
+        <div className="absolute bottom-0 left-0 w-64 h-64 bg-[#FF4500] rounded-full blur-[150px] opacity-10" />
+
+        <div className="relative z-10 max-w-6xl mx-auto px-6">
+          <div className="grid md:grid-cols-2 gap-16 items-center">
+            <div>
+              <span className="text-[#FF6B00] font-bold uppercase tracking-widest text-sm mb-4 block">For Restaurant Owners</span>
+              <h2 className="text-4xl md:text-5xl font-black text-white mb-6 leading-tight">
+                Grow Your<br />
+                <span className="bg-gradient-to-r from-[#FF6B00] to-[#FF8C00] bg-clip-text text-transparent">
+                  Kitchen Reach
+                </span>
+              </h2>
+              <p className="text-white/60 text-lg mb-8 leading-relaxed">
+                Join hundreds of local bukas already growing their business with QuickBite. 
+                Zero monthly fees, direct payments, and WhatsApp notifications.
+              </p>
+              <div className="space-y-4 mb-8">
+                {[
+                  '✅ Verified Status Badge',
+                  '💬 WhatsApp Notifications',
+                  '💰 Direct Daily Payments',
+                  '📊 Zero Monthly Fees',
+                ].map((feature, i) => (
+                  <div key={i} className="flex items-center gap-3 text-white/80">
+                    <div className="w-6 h-6 rounded-full bg-[#FF6B00]/20 flex items-center justify-center">
+                      <svg className="w-4 h-4 text-[#FF6B00]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                      </svg>
+                    </div>
+                    <span className="font-medium">{feature}</span>
+                  </div>
+                ))}
+              </div>
+              <Link href="/register?role=restaurant" className="inline-flex items-center gap-2 px-8 py-4 bg-gradient-to-r from-[#FF6B00] to-[#FF4500] text-white font-bold rounded-full hover:shadow-2xl hover:shadow-orange-500/30 transition-all hover:-translate-y-0.5">
+                Register Your Kitchen
+                <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
+                </svg>
+              </Link>
+            </div>
+            <div className="relative">
+              <div className="bg-gradient-to-br from-[#1a2744] to-[#0a1628] border border-white/10 rounded-3xl p-8">
+                <div className="text-center mb-6">
+                  <div className="text-6xl mb-4">👨‍🍳</div>
+                  <div className="inline-block bg-gradient-to-r from-[#FF6B00] to-[#FF4500] text-white text-4xl font-black px-6 py-2 rounded-2xl">
+                    +60%
+                  </div>
+                  <p className="text-white/60 mt-2 font-medium">More Orders</p>
+                </div>
+                <div className="space-y-3">
+                  <div className="bg-white/5 rounded-xl p-4 flex items-center justify-between">
+                    <span className="text-white/80">Today&apos;s Orders</span>
+                    <span className="text-[#FF6B00] font-bold">24</span>
+                  </div>
+                  <div className="bg-white/5 rounded-xl p-4 flex items-center justify-between">
+                    <span className="text-white/80">Revenue</span>
+                    <span className="text-green-400 font-bold">₦127,500</span>
+                  </div>
+                  <div className="bg-white/5 rounded-xl p-4 flex items-center justify-between">
+                    <span className="text-white/80">Rating</span>
+                    <span className="text-yellow-400 font-bold">4.9 ⭐</span>
+                  </div>
                 </div>
               </div>
             </div>
@@ -295,253 +333,122 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* For Restaurant Owners Section */}
-      <section className="py-20 bg-[#1B4332] text-white">
-        <div className="container">
-          <div className="max-w-3xl mx-auto text-center mb-12">
-            <h2 className="text-3xl md:text-4xl font-bold mb-4" style={{ fontFamily: 'var(--font-poppins)' }}>
-              Grow Your Kitchen Reach
-            </h2>
-            <p className="text-white/80 text-lg">
-              Join hundreds of local bukas already growing their business with QuickBite
-            </p>
+      {/* Testimonials */}
+      <section className="py-24 bg-[#FAFAFA]">
+        <div className="max-w-6xl mx-auto px-6">
+          <div className="text-center mb-16">
+            <span className="text-[#FF6B00] font-bold uppercase tracking-widest text-sm mb-4 block">Testimonials</span>
+            <h2 className="text-4xl md:text-5xl font-black text-gray-900 mb-4">What People Are Saying</h2>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-4xl mx-auto">
-            {/* Feature 1 */}
-            <div className="bg-white/10 backdrop-blur-sm rounded-2xl p-6 text-center">
-              <div className="w-14 h-14 bg-[#E85D04] rounded-full flex items-center justify-center mx-auto mb-4">
-                <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                  <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
-                </svg>
-              </div>
-              <h3 className="font-semibold text-lg mb-2">WhatsApp Notifications</h3>
-              <p className="text-white/70 text-sm">Receive instant order alerts directly on WhatsApp — never miss a customer</p>
-            </div>
-
-            {/* Feature 2 */}
-            <div className="bg-white/10 backdrop-blur-sm rounded-2xl p-6 text-center">
-              <div className="w-14 h-14 bg-[#E85D04] rounded-full flex items-center justify-center mx-auto mb-4">
-                <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                  <line x1="12" x2="12" y1="2" y2="22"/>
-                  <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/>
-                </svg>
-              </div>
-              <h3 className="font-semibold text-lg mb-2">Zero Monthly Fees</h3>
-              <p className="text-white/70 text-sm">Only pay when you make money — no subscription or listing fees ever</p>
-            </div>
-
-            {/* Feature 3 */}
-            <div className="bg-white/10 backdrop-blur-sm rounded-2xl p-6 text-center">
-              <div className="w-14 h-14 bg-[#E85D04] rounded-full flex items-center justify-center mx-auto mb-4">
-                <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                  <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
-                  <path d="m9 12 2 2 4-4"/>
-                </svg>
-              </div>
-              <h3 className="font-semibold text-lg mb-2">Verified Badge</h3>
-              <p className="text-white/70 text-sm">Stand out with a trusted badge and build customer confidence in your kitchen</p>
-            </div>
-          </div>
-
-          <div className="text-center mt-10">
-            <Link 
-              href="/register" 
-              className="bg-[#E85D04] hover:bg-[#D45103] text-white font-semibold px-8 py-4 rounded-full transition-colors shadow-lg inline-flex items-center gap-2"
-            >
-              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <path d="M3 3h18v18H3z"/>
-                <path d="M12 8v8"/>
-                <path d="M8 12h8"/>
-              </svg>
-              Register Your Buka
-            </Link>
-          </div>
-        </div>
-      </section>
-
-      {/* Testimonials Section */}
-      <section className="py-20 bg-[#FEFEFE]">
-        <div className="container">
-          <div className="text-center mb-14">
-            <h2 className="text-3xl md:text-4xl font-bold text-[#1B4332] mb-3" style={{ fontFamily: 'var(--font-poppins)' }}>
-              What Our Customers Say
-            </h2>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            {/* Testimonial 1 */}
-            <div className="bg-white rounded-2xl p-6 shadow-lg border border-[#F5F5F5]">
-              <div className="flex items-center gap-1 mb-4">
-                {[...Array(5)].map((_, i) => (
-                  <svg key={i} xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="#FFB703" stroke="none">
-                    <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
-                  </svg>
-                ))}
-              </div>
-              <p className="text-[#666666] mb-4">"QuickBite has made it so easy to get my favorite Amala and Ewedu from Tasty Buka. The delivery is always fast and the food arrives hot!"</p>
-              <div className="flex items-center gap-3">
-                <div className="w-10 h-10 bg-[#1B4332] rounded-full flex items-center justify-center text-white font-semibold">CO</div>
-                <div>
-                  <div className="font-semibold text-[#1A1A1A]">Chidinma O.</div>
-                  <div className="text-sm text-[#999999]">VI, Lagos</div>
+          <div className="grid md:grid-cols-3 gap-8">
+            {[
+              { name: 'Chidinma O.', location: 'Victoria Island, Lagos', text: 'QuickBite has changed how I eat. The Jollof Rice tastes exactly like my grandmother makes it!', rating: 5, emoji: '👩‍💼' },
+              { name: 'Emeka N.', location: 'Lekki Phase 1, Lagos', text: 'As a restaurant owner, QuickBite brought me 60% more orders. Best decision I made for my buka.', rating: 5, emoji: '👨‍🍳' },
+              { name: 'Funke A.', location: 'Ikeja, Lagos', text: 'Fast delivery, hot food, and great prices. I use QuickBite at least 3 times a week now.', rating: 5, emoji: '👩‍🏫' },
+            ].map((t, i) => (
+              <div key={i} className="bg-white rounded-3xl p-8 shadow-lg hover:shadow-xl transition-shadow">
+                <div className="flex items-center gap-1 text-yellow-400 mb-4">
+                  {[1,2,3,4,5].map(s => (
+                    <svg key={s} className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                      <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                    </svg>
+                  ))}
+                </div>
+                <p className="text-gray-700 mb-6 leading-relaxed italic">&ldquo;{t.text}&rdquo;</p>
+                <div className="flex items-center gap-3">
+                  <div className="w-12 h-12 rounded-full bg-gradient-to-br from-orange-100 to-orange-200 flex items-center justify-center text-2xl">
+                    {t.emoji}
+                  </div>
+                  <div>
+                    <p className="font-bold text-gray-900">{t.name}</p>
+                    <p className="text-gray-400 text-sm">{t.location}</p>
+                  </div>
                 </div>
               </div>
-            </div>
-
-            {/* Testimonial 2 */}
-            <div className="bg-white rounded-2xl p-6 shadow-lg border border-[#F5F5F5]">
-              <div className="flex items-center gap-1 mb-4">
-                {[...Array(5)].map((_, i) => (
-                  <svg key={i} xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="#FFB703" stroke="none">
-                    <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
-                  </svg>
-                ))}
-              </div>
-              <p className="text-[#666666] mb-4">"Since joining QuickBite, my orders have tripled! The WhatsApp notifications are a game-changer — I never miss an order anymore."</p>
-              <div className="flex items-center gap-3">
-                <div className="w-10 h-10 bg-[#E85D04] rounded-full flex items-center justify-center text-white font-semibold">EN</div>
-                <div>
-                  <div className="font-semibold text-[#1A1A1A]">Emeka N.</div>
-                  <div className="text-sm text-[#999999]">Restaurant Owner</div>
-                </div>
-              </div>
-            </div>
-
-            {/* Testimonial 3 */}
-            <div className="bg-white rounded-2xl p-6 shadow-lg border border-[#F5F5F5]">
-              <div className="flex items-center gap-1 mb-4">
-                {[...Array(5)].map((_, i) => (
-                  <svg key={i} xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="#FFB703" stroke="none">
-                    <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
-                  </svg>
-                ))}
-              </div>
-              <p className="text-[#666666] mb-4">"I love that I can support local businesses while enjoying authentic Nigerian food. The Jollof from Queen's Kitchen is unmatched!"</p>
-              <div className="flex items-center gap-3">
-                <div className="w-10 h-10 bg-[#2D6A4F] rounded-full flex items-center justify-center text-white font-semibold">FA</div>
-                <div>
-                  <div className="font-semibold text-[#1A1A1A]">Funke A.</div>
-                  <div className="text-sm text-[#999999]">Ikeja, Lagos</div>
-                </div>
-              </div>
-            </div>
+            ))}
           </div>
         </div>
       </section>
 
       {/* CTA Section */}
-      <section className="py-20 bg-[#E85D04] text-white">
-        <div className="container">
-          <div className="max-w-2xl mx-auto text-center">
-            <h2 className="text-3xl md:text-4xl font-bold mb-4" style={{ fontFamily: 'var(--font-poppins)' }}>
-              Ready to Taste the Difference?
-            </h2>
-            <p className="text-white/90 text-lg mb-8">
-              Join thousands of Lagosians already enjoying authentic local cuisine delivered to their doorstep
-            </p>
-            <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Link 
-                href="/register"
-                className="bg-white text-[#E85D04] font-semibold px-8 py-4 rounded-full hover:bg-[#FFF3CD] transition-colors shadow-lg inline-flex items-center justify-center gap-2"
-              >
-                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                  <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/>
-                  <circle cx="9" cy="7" r="4"/>
-                  <line x1="19" x2="19" y1="8" y2="14"/>
-                  <line x1="22" x2="16" y1="11" y2="11"/>
-                </svg>
-                Create Account
-              </Link>
-              <Link 
-                href="/login"
-                className="bg-transparent border-2 border-white text-white font-semibold px-8 py-4 rounded-full hover:bg-white/10 transition-colors inline-flex items-center justify-center gap-2"
-              >
-                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                  <path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/>
-                  <polyline points="10 17 15 12 10 7"/>
-                  <line x1="15" x2="3" y1="12" y2="12"/>
-                </svg>
-                Sign In
-              </Link>
-            </div>
+      <section className="py-24 bg-gradient-to-r from-[#FF6B00] to-[#FF4500] relative overflow-hidden">
+        <div className="absolute inset-0 opacity-10" style={{ backgroundImage: 'radial-gradient(circle, white 2px, transparent 2px)', backgroundSize: '30px 30px' }} />
+        <div className="relative z-10 max-w-3xl mx-auto px-6 text-center">
+          <h2 className="text-4xl md:text-6xl font-black text-white mb-6">Ready to Order?</h2>
+          <p className="text-white/80 text-xl mb-10">Join thousands of Lagosians enjoying authentic local cuisine every day</p>
+          <div className="flex flex-col sm:flex-row gap-4 justify-center">
+            <Link href="/register" className="px-8 py-4 bg-white text-[#FF4500] font-bold rounded-full text-lg hover:shadow-2xl transition-all hover:-translate-y-1">
+              Order Food Now
+            </Link>
+            <Link href="/register?role=restaurant" className="px-8 py-4 bg-transparent border-2 border-white text-white font-bold rounded-full text-lg hover:bg-white/10 transition-all hover:-translate-y-1">
+              Register My Kitchen
+            </Link>
           </div>
         </div>
       </section>
 
       {/* Footer */}
-      <footer className="bg-[#1A1A1A] text-white py-12">
-        <div className="container">
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-8 mb-10">
-            {/* Brand */}
+      <footer className="bg-[#0a1628] py-16">
+        <div className="max-w-6xl mx-auto px-6">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-8 mb-12">
             <div className="col-span-2 md:col-span-1">
-              <div className="flex items-center gap-2 mb-4">
-                <div className="w-8 h-8 rounded-full bg-[#E85D04] flex items-center justify-center">
-                  <span className="text-white font-bold text-sm">QB</span>
+              <Link href="/" className="flex items-center gap-2 mb-4">
+                <div className="w-10 h-10 rounded-2xl bg-gradient-to-br from-[#FF6B00] to-[#FF4500] flex items-center justify-center">
+                  <span className="text-white font-black text-sm">QB</span>
                 </div>
-                <span className="font-semibold text-lg" style={{ fontFamily: 'var(--font-poppins)' }}>
-                  QuickBite
-                </span>
-              </div>
-              <p className="text-sm text-[#999999] mb-4">
-                Your local food, delivered fast. Serving neighborhoods across Lagos.
-              </p>
-              <div className="flex gap-3">
-                <a href="#" className="w-10 h-10 bg-[#333333] rounded-full flex items-center justify-center hover:bg-[#E85D04] transition-colors">
-                  <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
-                    <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/>
-                  </svg>
-                </a>
-                <a href="#" className="w-10 h-10 bg-[#333333] rounded-full flex items-center justify-center hover:bg-[#E85D04] transition-colors">
-                  <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
-                    <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98C8.333 23.986 8.741 24 12 24c3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 1 0 0 12.324 6.162 6.162 0 0 0 0-12.324zM12 16a4 4 0 1 1 0-8 4 4 0 0 1 0 8zm6.406-11.845a1.44 1.44 0 1 0 0 2.881 1.44 1.44 0 0 0 0-2.881z"/>
-                  </svg>
-                </a>
-                <a href="#" className="w-10 h-10 bg-[#333333] rounded-full flex items-center justify-center hover:bg-[#E85D04] transition-colors">
-                  <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
-                    <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.372.195 1.872.216.571-.018 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/>
-                  </svg>
-                </a>
-              </div>
+                <span className="font-bold text-white text-xl">QuickBite</span>
+              </Link>
+              <p className="text-gray-400 text-sm leading-relaxed">Your favorite local bukas, one order away. Authentic Nigerian cuisine delivered fresh.</p>
             </div>
-
-            {/* Company */}
             <div>
-              <h4 className="font-semibold mb-4">Company</h4>
-              <ul className="space-y-2 text-sm text-[#999999]">
-                <li><a href="#" className="hover:text-[#E85D04] transition-colors">About Us</a></li>
-                <li><a href="#" className="hover:text-[#E85D04] transition-colors">Careers</a></li>
-                <li><a href="#" className="hover:text-[#E85D04] transition-colors">Blog</a></li>
-                <li><a href="#" className="hover:text-[#E85D04] transition-colors">Press</a></li>
+              <h4 className="text-white font-bold mb-4">Platform</h4>
+              <ul className="space-y-2">
+                {['How It Works', 'Browse Kitchens', 'For Partners', 'About Us'].map(item => (
+                  <li key={item}><Link href="#" className="text-gray-400 text-sm hover:text-white transition-colors">{item}</Link></li>
+                ))}
               </ul>
             </div>
-
-            {/* Support */}
             <div>
-              <h4 className="font-semibold mb-4">Support</h4>
-              <ul className="space-y-2 text-sm text-[#999999]">
-                <li><a href="#" className="hover:text-[#E85D04] transition-colors">Help Center</a></li>
-                <li><a href="#" className="hover:text-[#E85D04] transition-colors">Safety</a></li>
-                <li><a href="#" className="hover:text-[#E85D04] transition-colors">Contact Us</a></li>
+              <h4 className="text-white font-bold mb-4">Restaurants</h4>
+              <ul className="space-y-2">
+                {['Register Kitchen', 'Partner Dashboard', 'Delivery Info', 'Pricing'].map(item => (
+                  <li key={item}><Link href="#" className="text-gray-400 text-sm hover:text-white transition-colors">{item}</Link></li>
+                ))}
               </ul>
             </div>
-
-            {/* Legal */}
             <div>
-              <h4 className="font-semibold mb-4">Legal</h4>
-              <ul className="space-y-2 text-sm text-[#999999]">
-                <li><a href="#" className="hover:text-[#E85D04] transition-colors">Terms of Service</a></li>
-                <li><a href="#" className="hover:text-[#E85D04] transition-colors">Privacy Policy</a></li>
-                <li><a href="#" className="hover:text-[#E85D04] transition-colors">Cookie Policy</a></li>
+              <h4 className="text-white font-bold mb-4">Support</h4>
+              <ul className="space-y-2">
+                {['Help Center', 'Contact Us', 'FAQs', 'Terms of Service'].map(item => (
+                  <li key={item}><Link href="#" className="text-gray-400 text-sm hover:text-white transition-colors">{item}</Link></li>
+                ))}
               </ul>
             </div>
           </div>
-
-          <div className="border-t border-[#333333] pt-8 text-center text-sm text-[#666666]">
-            <p>&copy; 2026 QuickBite. All rights reserved. Made with ❤️ in Lagos, Nigeria.</p>
+          <div className="border-t border-white/10 pt-8 flex flex-col md:flex-row items-center justify-between gap-4">
+            <p className="text-gray-500 text-sm">© 2026 QuickBite. All rights reserved.</p>
+            <div className="flex gap-4">
+              {['Twitter', 'Instagram', 'WhatsApp'].map(social => (
+                <Link key={social} href="#" className="w-10 h-10 rounded-full bg-white/5 hover:bg-white/10 flex items-center justify-center text-gray-400 hover:text-white transition-colors">
+                  <span className="text-xs">{social[0]}</span>
+                </Link>
+              ))}
+            </div>
           </div>
         </div>
       </footer>
+
+      {/* CSS for floating animation */}
+      <style jsx global>{`
+        @keyframes float {
+          0%, 100% { transform: translateY(0px) rotate(0deg); }
+          50% { transform: translateY(-20px) rotate(5deg); }
+        }
+        .animate-float {
+          animation: float 6s ease-in-out infinite;
+        }
+      `}</style>
     </div>
   )
 }
