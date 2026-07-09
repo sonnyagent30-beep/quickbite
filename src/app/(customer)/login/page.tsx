@@ -13,18 +13,6 @@ export default function LoginPage() {
   const [loading, setLoading] = useState(false)
   const router = useRouter()
 
-  useEffect(() => {
-    // If already logged in, redirect
-    const session = getSession()
-    if (session) {
-      const role = session.user.role
-      if (role === 'restaurant') router.replace('/restaurant/dashboard')
-      else if (role === 'admin') router.replace('/admin-dashboard')
-      else if (role === 'rider') router.replace('/restaurant/restaurant-orders')
-      else router.replace('/home')
-    }
-  }, [router])
-
   const handleDemoLogin = (user: typeof DEMO_USERS[number]) => {
     setSelectedDemo(user)
     setPhone(user.phone)
