@@ -2,10 +2,12 @@
 
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
+import { useState } from 'react'
 import DemoBanner from '@/components/DemoBanner'
 
 export default function RestaurantLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname()
+  const [sidebarOpen, setSidebarOpen] = useState(false)
 
   const navItems = [
     {
@@ -57,10 +59,12 @@ export default function RestaurantLayout({ children }: { children: React.ReactNo
     },
   ]
 
+  const closeSidebar = () => setSidebarOpen(false)
+
   return (
     <div className="min-h-screen bg-[#F8F9FA] flex">
       <DemoBanner />
-      {/* Sidebar - Desktop */}
+      {/* Sidebar - Tablet+ (768px+) */}
       <aside className="hidden md:flex flex-col w-64 bg-white border-r border-[#E5E5E5] fixed h-full">
         {/* Logo */}
         <div className="p-6 border-b border-[#E5E5E5]">
@@ -124,12 +128,95 @@ export default function RestaurantLayout({ children }: { children: React.ReactNo
         </div>
       </aside>
 
+      {/* Mobile Sidebar Drawer */}
+      {sidebarOpen && (
+        <>
+          <div 
+            className="fixed inset-0 bg-black/50 z-50 md:hidden"
+            onClick={closeSidebar}
+          />
+          <aside className="fixed inset-y-0 left-0 w-64 bg-white border-r border-[#E5E5E5] z-50 md:hidden transform transition-transform duration-300">
+            {/* Logo */}
+            <div className="p-6 border-b border-[#E5E5E5]">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 rounded-full bg-[#E85D04] flex items-center justify-center">
+                    <span className="text-white font-bold text-sm">QB</span>
+                  </div>
+                  <div>
+                    <span className="font-semibold text-[#1A1A1A]">QuickBite</span>
+                    <p className="text-xs text-[#666666]">Partner Portal</p>
+                  </div>
+                </div>
+                <button onClick={closeSidebar} className="p-2 hover:bg-[#F5F5F5] rounded-lg">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                    <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
+                  </svg>
+                </button>
+              </div>
+            </div>
+
+            {/* Restaurant info */}
+            <div className="p-4 border-b border-[#E5E5E5]">
+              <p className="text-sm font-medium text-[#1A1A1A]">Chicken Republic</p>
+              <p className="text-xs text-[#2D6A4F] flex items-center gap-1 mt-1">
+                <span className="w-2 h-2 rounded-full bg-[#2D6A4F] animate-pulse" />
+                Online
+              </p>
+            </div>
+
+            {/* Navigation */}
+            <nav className="flex-1 p-4 space-y-1">
+              {navItems.map((item) => {
+                const isActive = pathname === item.path || pathname.startsWith(item.path + '/')
+                return (
+                  <Link
+                    key={item.path}
+                    href={item.path}
+                    onClick={closeSidebar}
+                    className={`flex items-center gap-3 px-4 py-3 rounded-xl transition-all ${
+                      isActive
+                        ? 'bg-[#E85D04] text-white'
+                        : 'text-[#666666] hover:bg-[#F5F5F5]'
+                    }`}
+                  >
+                    {item.icon}
+                    <span className="font-medium">{item.label}</span>
+                  </Link>
+                )
+              })}
+            </nav>
+
+            {/* Logout */}
+            <div className="p-4 border-t border-[#E5E5E5]">
+              <button 
+                onClick={() => {
+                  localStorage.clear()
+                  window.location.href = '/'
+                }}
+                className="flex items-center gap-3 px-4 py-3 w-full text-[#666666] hover:bg-[#F5F5F5] rounded-xl transition-all"
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>
+                  <polyline points="16 17 21 12 16 7"/>
+                  <line x1="21" x2="9" y1="12" y2="12"/>
+                </svg>
+                <span className="font-medium">Logout</span>
+              </button>
+            </div>
+          </aside>
+        </>
+      )}
+
       {/* Main Content */}
       <div className="flex-1 md:ml-64">
         {/* Top Bar */}
         <header className="bg-white border-b border-[#E5E5E5] h-14 flex items-center px-4 md:px-6 sticky top-0 z-40">
           {/* Mobile menu button */}
-          <button className="md:hidden mr-3">
+          <button 
+            className="md:hidden mr-3"
+            onClick={() => setSidebarOpen(true)}
+          >
             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#333333" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
               <line x1="4" x2="20" y1="12" y2="12"/>
               <line x1="4" x2="20" y1="6" y2="6"/>
@@ -156,7 +243,7 @@ export default function RestaurantLayout({ children }: { children: React.ReactNo
         </header>
 
         {/* Page Content */}
-        <main className="p-4 md:p-6">
+        <main className="p-4 md:p-6 pb-20 md:pb-6">
           {children}
         </main>
       </div>
