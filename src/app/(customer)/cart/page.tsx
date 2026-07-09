@@ -41,7 +41,7 @@ export default function CartPage() {
         {/* Header */}
         <header className="sticky top-0 bg-white border-b border-[#E5E5E5] z-50">
           <div className="flex items-center h-14 px-4">
-            <Link href="/" className="w-10 h-10 flex items-center justify-center">
+            <Link href="/home" className="w-10 h-10 flex items-center justify-center">
               <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#333333" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                 <path d="m15 18-6-6 6-6"/>
               </svg>
@@ -65,7 +65,7 @@ export default function CartPage() {
             </div>
             <h2 className="text-xl font-semibold text-[#1A1A1A] mb-2">Your cart is empty</h2>
             <p className="text-[#666666] mb-6">Add items from a restaurant to get started</p>
-            <Link href="/" className="btn-primary inline-block">
+            <Link href="/home" className="px-6 py-3 bg-[#E85D04] text-white rounded-xl font-semibold inline-block">
               Browse Restaurants
             </Link>
           </div>
@@ -79,7 +79,7 @@ export default function CartPage() {
       {/* Header */}
       <header className="sticky top-0 bg-white border-b border-[#E5E5E5] z-50">
         <div className="flex items-center h-14 px-4">
-          <Link href="/" className="w-10 h-10 flex items-center justify-center">
+          <Link href="/home" className="w-10 h-10 flex items-center justify-center">
             <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#333333" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
               <path d="m15 18-6-6 6-6"/>
             </svg>
@@ -163,7 +163,7 @@ export default function CartPage() {
 
       {/* Checkout Button */}
       <div className="fixed bottom-0 left-0 right-0 p-4 bg-white border-t border-[#E5E5E5] md:hidden">
-        <Link href="/checkout" className="btn-primary w-full text-center block">
+        <Link href="/checkout" className="block w-full py-4 bg-[#E85D04] text-white font-semibold text-center rounded-xl hover:bg-[#D45103] transition-colors">
           Proceed to Checkout • ₦{total.toLocaleString()}
         </Link>
       </div>
