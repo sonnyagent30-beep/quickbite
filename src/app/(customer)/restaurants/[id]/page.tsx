@@ -3,29 +3,16 @@
 import { useState, useEffect, useRef } from 'react'
 import { useParams } from 'next/navigation'
 import FoodItemCard from '@/components/FoodItemCard'
-import { useCart } from '@/lib/cart-context'
+import { useCart, CartItem } from '@/lib/cart-context'
+import { DEMO_RESTAURANTS, DEMO_MENU_ITEMS } from '@/lib/demo-data'
 import Link from 'next/link'
 
-import type { MenuItem } from '@/lib/types'
+import type { MenuItem, Restaurant } from '@/lib/types'
 
 interface Category {
   id: string
   name: string
   sort_order?: number
-}
-
-interface Restaurant {
-  id: string
-  name: string
-  description: string
-  cuisine_type: string
-  address: string
-  rating: number
-  rating_count: number
-  is_open: boolean
-  min_order: number
-  delivery_fee: number
-  image_url: string
 }
 
 export default function RestaurantDetailPage() {
@@ -36,63 +23,38 @@ export default function RestaurantDetailPage() {
   const [categories, setCategories] = useState<Category[]>([])
   const [loading, setLoading] = useState(true)
   const [activeCategory, setActiveCategory] = useState<string | null>(null)
-  const [heroHeight, setHeroHeight] = useState(200)
   const categoryRefs = useRef<Record<string, HTMLElement | null>>({})
   const { addItem, totalItems, items: cartItems } = useCart()
   const [showCrossRestaurantModal, setShowCrossRestaurantModal] = useState(false)
   const [pendingItem, setPendingItem] = useState<MenuItem | null>(null)
 
   useEffect(() => {
-    fetchRestaurantData()
+    // Load restaurant and menu from DEMO_RESTAURANTS
+    const foundRestaurant = DEMO_RESTAURANTS.find(r => r.id === restaurantId)
+    
+    if (foundRestaurant) {
+      setRestaurant(foundRestaurant as Restaurant)
+      
+      // Get menu items for this restaurant
+      const restaurantMenu = DEMO_MENU_ITEMS.filter(item => item.restaurant_id === restaurantId)
+      setMenuItems(restaurantMenu)
+      
+      // Extract unique categories
+      const uniqueCategories = Array.from(new Set(restaurantMenu.filter((item: MenuItem) => item.category).map((item: MenuItem) => item.category!)))
+      const categoryList: Category[] = uniqueCategories.map((cat: string, index: number) => ({
+        id: cat,
+        name: cat,
+        sort_order: index,
+      }))
+      setCategories(categoryList)
+      
+      if (categoryList.length > 0) {
+        setActiveCategory(categoryList[0].id)
+      }
+    }
+    
+    setLoading(false)
   }, [restaurantId])
-
-  useEffect(() => {
-    const firstCat = getActiveCategory()
-    if (firstCat && !activeCategory) {
-      setActiveCategory(firstCat)
-    }
-  }, [categories, activeCategory])
-
-  const fetchRestaurantData = async () => {
-    try {
-      const [restaurantRes, menuRes] = await Promise.all([
-        fetch(`/api/restaurants/${restaurantId}`),
-        fetch(`/api/restaurants/${restaurantId}/menu`),
-      ])
-
-      if (restaurantRes.ok) {
-        const restaurantData = await restaurantRes.json()
-        setRestaurant(restaurantData.restaurant)
-      }
-
-      if (menuRes.ok) {
-        const menuData = await menuRes.json()
-        setMenuItems(menuData.menu || [])
-        setCategories(menuData.categories || [])
-      }
-    } catch (error) {
-      console.error('Failed to fetch restaurant data:', error)
-    } finally {
-      setLoading(false)
-    }
-  }
-
-  const getActiveCategory = () => {
-    if (activeCategory) return activeCategory
-    if (categories.length > 0) {
-      const first = categories[0]
-      return typeof first === 'string' ? first : (first as Category).id
-    }
-    return null
-  }
-
-  const getCategoryName = (cat: string | Category) => {
-    return typeof cat === 'string' ? cat : cat.name
-  }
-
-  const getCategoryId = (cat: string | Category) => {
-    return typeof cat === 'string' ? cat : cat.id
-  }
 
   const scrollToCategory = (categoryId: string) => {
     setActiveCategory(categoryId)
@@ -118,7 +80,7 @@ export default function RestaurantDetailPage() {
   }
 
   const confirmSwitchRestaurant = () => {
-    if (!pendingItem) return
+    if (!pendingItem || !restaurant) return
     const { clearCart } = useCart()
     clearCart()
     addItem({
@@ -126,8 +88,8 @@ export default function RestaurantDetailPage() {
       name: pendingItem.name,
       price: pendingItem.price,
       image_url: pendingItem.image_url || '',
-      restaurant_id: restaurant!.id,
-      restaurant_name: restaurant!.name,
+      restaurant_id: restaurant.id,
+      restaurant_name: restaurant.name,
     })
     setShowCrossRestaurantModal(false)
     setPendingItem(null)
@@ -139,18 +101,15 @@ export default function RestaurantDetailPage() {
   }
 
   const getItemQuantity = (itemId: string) => {
-    const cartItem = cartItems.find(i => i.menu_item_id === itemId)
+    const cartItem = cartItems.find((i: CartItem) => i.menu_item_id === itemId)
     return cartItem?.quantity ?? 0
   }
 
-  // categories from API are strings: ["Soups", "Rice", ...]
-  // items have category field with same string value: item.category === "Soups"
-
-  const itemsByCategory = categories.map((cat) => {
-    const catName = getCategoryName(cat)
+  // Group items by category
+  const itemsByCategory = categories.map((cat: Category) => {
     return {
       category: cat,
-      items: menuItems.filter(item => item.category === catName),
+      items: menuItems.filter((item: MenuItem) => item.category === cat.name),
     }
   })
 
@@ -219,7 +178,6 @@ export default function RestaurantDetailPage() {
                 <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
               </svg>
               <span className="font-medium">{restaurant.rating}</span>
-              <span className="opacity-80">({restaurant.rating_count})</span>
             </div>
             <span className="opacity-80">{restaurant.cuisine_type}</span>
             <span className="opacity-80">•</span>
@@ -231,27 +189,29 @@ export default function RestaurantDetailPage() {
       </div>
 
       {/* Sticky Category Tabs */}
-      <div className="sticky top-14 z-40 bg-white border-b border-[#F5F5F5] shadow-sm">
-        <div className="flex gap-2 overflow-x-auto px-4 py-3 no-scrollbar">
-          {categories.map((category) => (
-            <button
-              key={category.id}
-              onClick={() => scrollToCategory(category.id)}
-              className={`px-4 py-2 rounded-full text-sm font-medium whitespace-nowrap transition-all ${
-                activeCategory === category.id
-                  ? 'bg-[#FF7A00] text-white'
-                  : 'bg-[#F5F5F5] text-[#333333] hover:bg-[#E5E5E5]'
-              }`}
-            >
-              {category.name}
-            </button>
-          ))}
+      {categories.length > 0 && (
+        <div className="sticky top-14 z-40 bg-white border-b border-[#F5F5F5] shadow-sm">
+          <div className="flex gap-2 overflow-x-auto px-4 py-3 no-scrollbar">
+            {categories.map((category: Category) => (
+              <button
+                key={category.id}
+                onClick={() => scrollToCategory(category.id)}
+                className={`px-4 py-2 rounded-full text-sm font-medium whitespace-nowrap transition-all ${
+                  activeCategory === category.id
+                    ? 'bg-[#FF7A00] text-white'
+                    : 'bg-[#F5F5F5] text-[#333333] hover:bg-[#E5E5E5]'
+                }`}
+              >
+                {category.name}
+              </button>
+            ))}
+          </div>
         </div>
-      </div>
+      )}
 
       {/* Menu Items by Category */}
       <div className="p-4 space-y-6">
-        {itemsByCategory.map(({ category, items }) => (
+        {itemsByCategory.map(({ category, items }: { category: Category; items: MenuItem[] }) => (
           <section
             key={category.id}
             ref={(el) => { categoryRefs.current[category.id] = el }}
@@ -261,7 +221,7 @@ export default function RestaurantDetailPage() {
               {category.name}
             </h2>
             <div className="space-y-3">
-              {items.map((item) => (
+              {items.map((item: MenuItem) => (
                 <FoodItemCard
                   key={item.id}
                   item={item}

@@ -58,6 +58,12 @@ export default function AdminDashboardPage() {
     return `${hours}h ago`
   }
 
+  const handleLogout = () => {
+    localStorage.removeItem('quickbite_user')
+    localStorage.removeItem('quickbite_session')
+    window.location.href = '/'
+  }
+
   const getStatusBadge = (status: string) => {
     const styles: Record<string, { bg: string; text: string }> = {
       pending: { bg: 'bg-[#FFF3CD]', text: 'text-[#1A1A1A]' },
@@ -84,11 +90,24 @@ export default function AdminDashboardPage() {
           </h1>
           <p className="text-sm text-[#666666]">Overview of QuickBite platform performance</p>
         </div>
-        <select className="px-4 py-2 bg-white rounded-xl border border-[#E5E5E5] text-sm">
-          <option>Last 7 days</option>
-          <option>Last 30 days</option>
-          <option>Last 90 days</option>
-        </select>
+        <div className="flex items-center gap-3">
+          <select className="px-4 py-2 bg-white rounded-xl border border-[#E5E5E5] text-sm">
+            <option>Last 7 days</option>
+            <option>Last 30 days</option>
+            <option>Last 90 days</option>
+          </select>
+          <button
+            onClick={handleLogout}
+            className="flex items-center gap-2 px-4 py-2 bg-[#DC3545]/10 text-[#DC3545] rounded-xl hover:bg-[#DC3545]/20 transition-colors text-sm font-medium"
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>
+              <polyline points="16 17 21 12 16 7"/>
+              <line x1="21" x2="9" y1="12" y2="12"/>
+            </svg>
+            Logout
+          </button>
+        </div>
       </div>
 
       {/* KPI Cards */}

@@ -6,7 +6,7 @@ import DemoBanner from '@/components/DemoBanner'
 import BottomNav from '@/components/BottomNav'
 
 // Routes that need the Header + Demo components
-const authenticatedRoutes = ['/home', '/search', '/cart', '/orders', '/profile', '/restaurants', '/checkout', '/settings', '/onboarding']
+const authenticatedRoutes = ['/home', '/search', '/cart', '/orders', '/profile', '/restaurants', '/checkout', '/onboarding', '/account']
 
 export default function AppShell({ children }: { children: React.ReactNode }) {
   const pathname = usePathname()

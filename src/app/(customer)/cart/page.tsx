@@ -4,13 +4,17 @@ import { useState } from 'react'
 import Link from 'next/link'
 import CartItemComponent from '@/components/CartItem'
 import { useCart } from '@/lib/cart-context'
+import { DEMO_RESTAURANTS } from '@/lib/demo-data'
 
 export default function CartPage() {
-  const { items, restaurantName, updateQuantity, removeItem, subtotal, clearCart } = useCart()
+  const { items, restaurantId, restaurantName, updateQuantity, removeItem, subtotal, clearCart } = useCart()
   const [promoCode, setPromoCode] = useState('')
   const [promoDiscount, setPromoDiscount] = useState(0)
-  const [ promoError, setPromoError] = useState('')
-  const deliveryFee = items.length > 0 ? 500 : 0
+  const [promoError, setPromoError] = useState('')
+  
+  // Get delivery fee from restaurant if available
+  const restaurant = DEMO_RESTAURANTS.find(r => r.id === restaurantId)
+  const deliveryFee = restaurant?.delivery_fee || 500
   const total = subtotal + deliveryFee - promoDiscount
 
   const applyPromoCode = () => {

@@ -4,59 +4,73 @@ import { useState } from 'react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { useCart } from '@/lib/cart-context'
+import { DEMO_RESTAURANTS } from '@/lib/demo-data'
 
 export default function CheckoutPage() {
   const router = useRouter()
-  const { items, restaurantName, subtotal, clearCart } = useCart()
+  const { items, restaurantId, restaurantName, subtotal, clearCart } = useCart()
   const [deliveryAddress, setDeliveryAddress] = useState('')
   const [deliveryInstructions, setDeliveryInstructions] = useState('')
-  const [paymentMethod, setPaymentMethod] = useState<'card' | 'ussd' | 'transfer'>('card')
+  const [paymentMethod, setPaymentMethod] = useState<'cod' | 'card'>('cod')
   const [isProcessing, setIsProcessing] = useState(false)
   const [phoneNumber, setPhoneNumber] = useState('')
-  const deliveryFee = items.length > 0 ? 500 : 0
+  
+  // Get delivery fee from restaurant if available
+  const restaurant = DEMO_RESTAURANTS.find(r => r.id === restaurantId)
+  const deliveryFee = restaurant?.delivery_fee || 500
   const total = subtotal + deliveryFee
 
-  const handlePayment = async () => {
+  const generateOrderId = () => {
+    const timestamp = Date.now().toString(36).toUpperCase()
+    const random = Math.random().toString(36).substring(2, 6).toUpperCase()
+    return `QB-${timestamp}-${random}`
+  }
+
+  const handlePlaceOrder = async () => {
     if (!deliveryAddress.trim()) {
       alert('Please enter a delivery address')
       return
     }
 
+    if (!phoneNumber.trim()) {
+      alert('Please enter a phone number')
+      return
+    }
+
     setIsProcessing(true)
     
-    // Simulate payment processing
-    await new Promise(resolve => setTimeout(resolve, 2000))
+    // Simulate order processing
+    await new Promise(resolve => setTimeout(resolve, 1500))
     
-    // Create order
-    try {
-      const response = await fetch('/api/orders', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          restaurant_id: items[0]?.restaurant_id,
-          items: items.map(item => ({
-            menu_item_id: item.menu_item_id,
-            quantity: item.quantity,
-            unit_price: item.price,
-            subtotal: item.price * item.quantity,
-          })),
-          subtotal,
-          delivery_fee: deliveryFee,
-          total,
-          delivery_address: deliveryAddress,
-          payment_method: paymentMethod,
-        }),
-      })
-
-      if (response.ok) {
-        const order = await response.json()
-        clearCart()
-        router.push(`/orders/${order.id}`)
-      }
-    } catch (error) {
-      console.error('Failed to create order:', error)
-      setIsProcessing(false)
+    // Generate order ID
+    const orderId = generateOrderId()
+    
+    // Store order details in localStorage for demo purposes
+    const orderData = {
+      id: orderId,
+      restaurant_name: restaurantName,
+      items: items.map(item => ({
+        name: item.name,
+        quantity: item.quantity,
+        price: item.price,
+      })),
+      subtotal,
+      delivery_fee: deliveryFee,
+      total,
+      delivery_address: deliveryAddress,
+      customer_phone: phoneNumber,
+      payment_method: paymentMethod,
+      status: 'pending' as const,
+      created_at: new Date().toISOString(),
     }
+    
+    // Save to localStorage (demo)
+    const existingOrders = JSON.parse(localStorage.getItem('quickbite_orders') || '[]')
+    existingOrders.unshift(orderData)
+    localStorage.setItem('quickbite_orders', JSON.stringify(existingOrders))
+    
+    clearCart()
+    router.push(`/orders?orderId=${orderId}`)
   }
 
   if (items.length === 0) {
@@ -91,15 +105,15 @@ export default function CheckoutPage() {
 
       {/* Main Content */}
       <main className="pb-32">
-        {/* Delivery Address */}
+        {/* Delivery Details */}
         <div className="p-4 border-b border-[#E5E5E5]">
           <h2 className="text-base font-semibold text-[#1A1A1A] mb-3" style={{ fontFamily: 'var(--font-poppins)' }}>
-            Delivery Address
+            Delivery Details
           </h2>
           <div className="space-y-3">
             <input
               type="tel"
-              placeholder="Phone number (for updates)"
+              placeholder="Phone number"
               value={phoneNumber}
               onChange={(e) => setPhoneNumber(e.target.value)}
               className="w-full px-4 py-3 rounded-xl bg-[#F5F5F5] text-[#1A1A1A] focus:outline-none focus:ring-2 focus:ring-[#E85D04]"
@@ -157,6 +171,28 @@ export default function CheckoutPage() {
             Payment Method
           </h2>
           <div className="space-y-3">
+            {/* Cash on Delivery - Default */}
+            <label className={`flex items-center gap-3 p-4 rounded-xl border-2 cursor-pointer transition-all ${paymentMethod === 'cod' ? 'border-[#E85D04] bg-[#FFF3CD]' : 'border-[#E5E5E5] bg-white'}`}>
+              <input
+                type="radio"
+                name="payment"
+                value="cod"
+                checked={paymentMethod === 'cod'}
+                onChange={() => setPaymentMethod('cod')}
+                className="w-5 h-5 accent-[#E85D04]"
+              />
+              <div className="flex-1">
+                <p className="font-medium text-[#1A1A1A]">Cash on Delivery</p>
+                <p className="text-xs text-[#666666]">Pay with cash when your order arrives</p>
+              </div>
+              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#666666" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <rect width="20" height="12" x="2" y="6" rx="2"/>
+                <circle cx="12" cy="12" r="2"/>
+                <path d="M6 12h.01M18 12h.01"/>
+              </svg>
+            </label>
+
+            {/* Card Payment */}
             <label className={`flex items-center gap-3 p-4 rounded-xl border-2 cursor-pointer transition-all ${paymentMethod === 'card' ? 'border-[#E85D04] bg-[#FFF3CD]' : 'border-[#E5E5E5] bg-white'}`}>
               <input
                 type="radio"
@@ -168,93 +204,21 @@ export default function CheckoutPage() {
               />
               <div className="flex-1">
                 <p className="font-medium text-[#1A1A1A]">Card Payment</p>
-                <p className="text-xs text-[#666666]">Pay with your debit/credit card via Flutterwave</p>
+                <p className="text-xs text-[#666666]">Pay with your debit/credit card</p>
               </div>
               <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#666666" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                 <rect width="20" height="14" x="2" y="5" rx="2"/>
                 <line x1="2" x2="22" y1="10" y2="10"/>
               </svg>
             </label>
-
-            <label className={`flex items-center gap-3 p-4 rounded-xl border-2 cursor-pointer transition-all ${paymentMethod === 'ussd' ? 'border-[#E85D04] bg-[#FFF3CD]' : 'border-[#E5E5E5] bg-white'}`}>
-              <input
-                type="radio"
-                name="payment"
-                value="ussd"
-                checked={paymentMethod === 'ussd'}
-                onChange={() => setPaymentMethod('ussd')}
-                className="w-5 h-5 accent-[#E85D04]"
-              />
-              <div className="flex-1">
-                <p className="font-medium text-[#1A1A1A]">USSD</p>
-                <p className="text-xs text-[#666666]">Pay via USSD (GTC, UBA, First Bank)</p>
-              </div>
-              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#666666" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/>
-              </svg>
-            </label>
-
-            <label className={`flex items-center gap-3 p-4 rounded-xl border-2 cursor-pointer transition-all ${paymentMethod === 'transfer' ? 'border-[#E85D04] bg-[#FFF3CD]' : 'border-[#E5E5E5] bg-white'}`}>
-              <input
-                type="radio"
-                name="payment"
-                value="transfer"
-                checked={paymentMethod === 'transfer'}
-                onChange={() => setPaymentMethod('transfer')}
-                className="w-5 h-5 accent-[#E85D04]"
-              />
-              <div className="flex-1">
-                <p className="font-medium text-[#1A1A1A]">Bank Transfer</p>
-                <p className="text-xs text-[#666666]">Transfer to QuickBite account</p>
-              </div>
-              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#666666" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <path d="M2 9a3 3 0 0 1 0 6v2a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-2a3 3 0 0 1 0-6V7a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2Z"/>
-                <path d="M13 5v2"/>
-                <path d="M13 17v2"/>
-                <path d="M13 11v2"/>
-              </svg>
-            </label>
           </div>
         </div>
-
-        {/* Flutterwave Payment Form */}
-        {paymentMethod === 'card' && (
-          <div className="p-4 border-t border-[#E5E5E5]">
-            <div className="bg-[#F8F9FA] rounded-xl p-4">
-              <h3 className="text-sm font-semibold text-[#1A1A1A] mb-4">Card Details</h3>
-              <div className="space-y-3">
-                <input
-                  type="text"
-                  placeholder="Card number"
-                  className="w-full px-4 py-3 rounded-xl bg-white border border-[#E5E5E5] text-[#1A1A1A] focus:outline-none focus:ring-2 focus:ring-[#E85D04]"
-                />
-                <div className="flex gap-3">
-                  <input
-                    type="text"
-                    placeholder="MM/YY"
-                    className="w-1/2 px-4 py-3 rounded-xl bg-white border border-[#E5E5E5] text-[#1A1A1A] focus:outline-none focus:ring-2 focus:ring-[#E85D04]"
-                  />
-                  <input
-                    type="text"
-                    placeholder="CVC"
-                    className="w-1/2 px-4 py-3 rounded-xl bg-white border border-[#E5E5E5] text-[#1A1A1A] focus:outline-none focus:ring-2 focus:ring-[#E85D04]"
-                  />
-                </div>
-                <input
-                  type="text"
-                  placeholder="Cardholder name"
-                  className="w-full px-4 py-3 rounded-xl bg-white border border-[#E5E5E5] text-[#1A1A1A] focus:outline-none focus:ring-2 focus:ring-[#E85D04]"
-                />
-              </div>
-            </div>
-          </div>
-        )}
       </main>
 
-      {/* Pay Button */}
+      {/* Place Order Button */}
       <div className="fixed bottom-0 left-0 right-0 p-4 bg-white border-t border-[#E5E5E5]">
         <button
-          onClick={handlePayment}
+          onClick={handlePlaceOrder}
           disabled={isProcessing}
           className="btn-primary w-full text-center flex items-center justify-center gap-2"
         >
@@ -267,7 +231,7 @@ export default function CheckoutPage() {
               Processing...
             </>
           ) : (
-            <>Pay ₦{total.toLocaleString()}</>
+            <>Place Order • ₦{total.toLocaleString()}</>
           )}
         </button>
       </div>
