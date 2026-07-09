@@ -2,20 +2,24 @@
 
 import { usePathname } from 'next/navigation'
 import Header from '@/components/Header'
+import DemoBanner from '@/components/DemoBanner'
+import BottomNav from '@/components/BottomNav'
 
-// Routes that need the Header component
-const authenticatedRoutes = ['/home', '/search', '/cart', '/orders', '/profile']
+// Routes that need the Header + Demo components
+const authenticatedRoutes = ['/home', '/search', '/cart', '/orders', '/profile', '/restaurants', '/checkout', '/settings', '/onboarding']
 
 export default function AppShell({ children }: { children: React.ReactNode }) {
   const pathname = usePathname()
-  
-  // Check if current route needs Header
-  const needsHeader = authenticatedRoutes.some(route => pathname.startsWith(route))
-  
+
+  // Check if current route needs authenticated shell
+  const isAuthenticatedRoute = authenticatedRoutes.some(route => pathname.startsWith(route))
+
   return (
     <>
-      {needsHeader && <Header />}
+      {isAuthenticatedRoute && <DemoBanner />}
+      {isAuthenticatedRoute && <Header />}
       {children}
+      {isAuthenticatedRoute && <BottomNav />}
     </>
   )
 }

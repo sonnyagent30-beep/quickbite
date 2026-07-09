@@ -49,11 +49,11 @@ export default function LandingPage() {
         {/* Background Image */}
         <div className="absolute inset-0">
           <img 
-            src="https://images.unsplash.com/photo-1504674900247-0877df9cc836?w=1200&q=80" 
+            src="https://images.unsplash.com/photo-1564671165093-20688ff1fffa?w=1400&q=85&fit=crop" 
             alt="Nigerian food spread"
-            className="w-full h-full object-cover opacity-30"
+            className="w-full h-full object-cover opacity-50"
           />
-          <div className="absolute inset-0 bg-gradient-to-t from-[#1B4332] via-[#1B4332]/80 to-[#1B4332]/60" />
+          <div className="absolute inset-0 bg-gradient-to-t from-[#1B4332] via-[#1B4332]/70 to-transparent" />
         </div>
 
         <div className="container relative z-10 py-24 md:py-32">
